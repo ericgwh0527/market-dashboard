@@ -39,7 +39,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: main                    # latest data, not the commit that triggered the run
           persist-credentials: false
@@ -75,7 +75,7 @@ jobs:
     env:
       HAS_PRIVATE: ${{ secrets.PRIVATE_REPO_TOKEN != '' && secrets.HOLDINGS_PASSPHRASE != '' }}
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         if: env.HAS_PRIVATE == 'true'
         with:
           ref: main                    # pick up the market job's fresh commit
@@ -92,7 +92,7 @@ jobs:
 
       - name: Check out private holdings repo
         if: env.HAS_PRIVATE == 'true'
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: ${{ github.repository_owner }}/market-dashboard-private
           token: ${{ secrets.PRIVATE_REPO_TOKEN }}
