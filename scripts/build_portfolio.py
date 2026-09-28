@@ -67,8 +67,13 @@ def fetch_quotes(symbols: list[str]) -> dict[str, dict]:
     out = {}
     if not symbols:
         return out
-    raw = yf.download(symbols, period="10d", interval="1d", group_by="ticker",
-                      auto_adjust=False, threads=True, progress=False)
+    # Actions logs of a public repo are public: swallow all yfinance output so a
+    # failed download can't print the names of the stocks you hold.
+    import contextlib, io, logging
+    logging.getLogger("yfinance").disabled = True
+    with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+        raw = yf.download(symbols, period="10d", interval="1d", group_by="ticker",
+                          auto_adjust=False, threads=True, progress=False)
     for s in symbols:
         try:
             df = raw[s] if isinstance(raw.columns, pd.MultiIndex) else raw
@@ -188,7 +193,7 @@ def main():
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(encrypt(result, pw, salt)), encoding="utf-8")
-    print(f"Portfolio: {len(result['positions'])} positions encrypted -> {OUT.relative_to(ROOT)}")
+    print(f"Portfolio encrypted -> {OUT.relative_to(ROOT)}")
 
 
 if __name__ == "__main__":
