@@ -281,3 +281,7 @@ table.tbl tbody tr { cursor: pointer; }
 [data-u="white-space-normal"] { white-space:normal; }
 .bar-up { background: var(--up-mark); }
 .bar-down { background: var(--down-mark); }
+
+[hidden] { display: none !important; }
+a.icon-btn { color: inherit; text-decoration: none; }
+.top-inner #updateBtn + #themeBtn { margin-left: 6px; }

@@ -45,11 +45,12 @@ class FakeSummarizer:
         return "**Big picture** calm."
 
 
-def pipeline(tmp_path, frame, summarizer=None, frames=None):
+def pipeline(tmp_path, frame, summarizer=None, frames=None, policy=None):
     frames = frames if frames is not None else {s: frame(np.linspace(10, 20, 300)) for s in ("^KLSE", "1155.KL", "NVDA")}
     news = FakeNews()
+    kw = {"summary_policy": policy} if policy else {}
     return MarketPipeline(SETTINGS, FakePrices(frames), FakeFundamentals(), NewsService(news, news),
-                          summarizer or NullSummarizer(), DataStore(tmp_path), log=lambda *_: None)
+                          summarizer or NullSummarizer(), DataStore(tmp_path), log=lambda *_: None, **kw)
 
 
 def test_pipeline_output_contract(tmp_path, frame):
@@ -80,7 +81,35 @@ def test_missing_symbol_keeps_previous_row(tmp_path, frame):
     assert nv["stale"] is True
 
 
-def test_summary_falls_back_to_previous(tmp_path, frame):
+def test_summary_falls_back_to_previous_when_ai_fails(tmp_path, frame):
+    from datetime import timedelta
+    from dashboard.ai_policy import CooldownPolicy
     pipeline(tmp_path, frame, FakeSummarizer()).run()
-    out = pipeline(tmp_path, frame).run()
+    out = pipeline(tmp_path, frame, policy=CooldownPolicy("force", cooldown=timedelta(0))).run()
     assert out["summary"]["stale"] is True
+
+
+class CountingSummarizer(FakeSummarizer):
+    calls = 0
+
+    def summarize(self, brief):
+        CountingSummarizer.calls += 1
+        return super().summarize(brief)
+
+
+def test_button_spam_cannot_drain_ai_quota(tmp_path, frame):
+    """Ten runs in a row (e.g. someone mashing Update) -> at most one AI call per cooldown."""
+    from dashboard.ai_policy import CooldownPolicy
+    CountingSummarizer.calls = 0
+    for _ in range(10):
+        out = pipeline(tmp_path, frame, CountingSummarizer(), policy=CooldownPolicy("force")).run()
+    assert CountingSummarizer.calls == 1
+    assert out["summary"]["text"] and not out["summary"].get("stale")
+
+
+def test_ai_off_reuses_brief_without_calling(tmp_path, frame):
+    from dashboard.ai_policy import CooldownPolicy
+    first = pipeline(tmp_path, frame, FakeSummarizer()).run()["summary"]
+    CountingSummarizer.calls = 0
+    out = pipeline(tmp_path, frame, CountingSummarizer(), policy=CooldownPolicy("off")).run()
+    assert CountingSummarizer.calls == 0 and out["summary"] == first

@@ -85,6 +85,7 @@ class App {
       if (e.key === "Enter" && e.target.matches?.("[data-sym]")) this.router.openSymbol(e.target.dataset.sym);
     });
 
+    this.#setupUpdateLink();
     $("#themeBtn").addEventListener("click", () => this.theme.toggle());
     this.theme.onChange(() => {
       if (this.sheet.isOpen) this.sheet.redraw();
@@ -94,6 +95,16 @@ class App {
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "visible" && Date.now() - (this.loadedAt || 0) > REFRESH_AFTER_MS) this.load();
     });
+  }
+
+  /** "<owner>.github.io/<repo>/" -> that repo's "Run workflow" page. Hidden elsewhere (e.g. localhost). */
+  #setupUpdateLink() {
+    const owner = location.hostname.endsWith(".github.io") ? location.hostname.split(".")[0] : null;
+    const repo = location.pathname.split("/").filter(Boolean)[0];
+    if (!owner || !repo || !/^[\w.-]+$/.test(owner + repo)) return;
+    const link = $("#updateBtn");
+    link.href = `https://github.com/${owner}/${repo}/actions/workflows/update-data.yml`;
+    link.hidden = false;
   }
 
   // ---------------------------------------------------------------- routing

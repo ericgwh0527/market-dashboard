@@ -23,6 +23,12 @@
       <div class="brand"><span class="brand-dot"></span>Market Dashboard</div>
       <nav class="tabs" id="tabs" role="tablist" aria-label="Sections"></nav>
       <div class="updated" id="updated"></div>
+      <!-- Opens GitHub's "Run workflow" page. Only the repo owner can start a run there,
+           so the public site holds no token and visitors can't trigger (or spam) updates. -->
+      <a class="icon-btn" id="updateBtn" hidden target="_blank" rel="noopener noreferrer"
+         title="Update data now (repo owner only)" aria-label="Update data now (repo owner only)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+      </a>
       <button class="icon-btn" id="themeBtn" aria-label="Toggle dark mode" title="Toggle dark mode">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
       </button>

@@ -4,7 +4,9 @@ This file is only the *composition root*: it picks concrete providers and wires
 them into MarketPipeline. The logic lives in the `dashboard` package.
 
     python scripts/fetch_data.py
-Env: GEMINI_API_KEY (optional), SESSION (optional: after-bursa / after-us)
+Env: GEMINI_API_KEY (optional)
+     SESSION  (optional: after-bursa / after-us / midday)
+     AI_MODE  (auto | force | off – see dashboard/ai_policy.py; default auto)
 """
 from __future__ import annotations
 
@@ -15,6 +17,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+from dashboard.ai_policy import CooldownPolicy  # noqa: E402
 from dashboard.config import load_settings  # noqa: E402
 from dashboard.news import NewsService  # noqa: E402
 from dashboard.pipeline import MarketPipeline, TooLittleData  # noqa: E402
@@ -36,6 +39,7 @@ def build_pipeline() -> MarketPipeline:
         news=NewsService(search=GoogleNewsProvider(), by_symbol=YahooNewsProvider()),
         summarizer=GeminiSummarizer(key, settings.gemini_model) if key else NullSummarizer(),
         store=DataStore(ROOT / "docs" / "data"),
+        summary_policy=CooldownPolicy(mode=os.environ.get("AI_MODE", "auto").strip() or "auto"),
     )
 
 

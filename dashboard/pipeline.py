@@ -5,6 +5,7 @@ import sys
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 
+from .ai_policy import CooldownPolicy, SummaryPolicy
 from .analysis.metrics import analyse
 from .analysis.screens import DEFAULT_SCREENS, Screen, run_screens
 from .analysis.signals import DEFAULT_RULES, SignalRule
@@ -22,7 +23,11 @@ class TooLittleData(RuntimeError):
 
 
 def session_for(now_utc: datetime) -> str:
-    return "after-bursa" if 8 <= now_utc.hour < 18 else "after-us"
+    """Label for runs without an explicit SESSION (manual / push)."""
+    h = now_utc.hour
+    if 1 <= h < 8:
+        return "midday"          # 09:00–16:00 MYT: Bursa trading hours
+    return "after-bursa" if 8 <= h < 18 else "after-us"
 
 
 @dataclass
@@ -35,6 +40,8 @@ class MarketPipeline:
     store: DataStore
     rules: list[SignalRule] = field(default_factory=lambda: list(DEFAULT_RULES))
     screens: list[Screen] = field(default_factory=lambda: list(DEFAULT_SCREENS))
+    summary_policy: SummaryPolicy = field(default_factory=CooldownPolicy)
+    summary_status: dict = field(default_factory=dict, init=False)
     min_coverage: float = 0.5
     log: callable = print
 
@@ -78,8 +85,9 @@ class MarketPipeline:
             "themes": aggregate_themes(stocks),
             "screens": run_screens(stocks, self.screens),
             "market_news": market_news,
-            "summary": self._summary(indices, stocks, market_news, prev, latest_time=now_myt, session=session),
+            "summary": self._summary(indices, stocks, market_news, prev, now=now, session=session),
         }
+        latest["summary_status"] = self.summary_status   # public diagnostics (no secrets)
         self.store.save_latest(latest)
         self.store.save_history(now_myt, session, self._snapshot(latest))
         self.log(f"Done: {len(indices)} indices, {len(stocks)} stocks, {len(market_news)} headlines, "
@@ -96,7 +104,13 @@ class MarketPipeline:
         rel = self.store.save_series(inst.symbol, a.series)
         return {**inst.as_dict(), **a.metrics, "file": rel}
 
-    def _summary(self, indices, stocks, market_news, prev, latest_time, session):
+    def _summary(self, indices, stocks, market_news, prev, now, session):
+        previous = prev.get("summary")
+        go, reason = self.summary_policy.decide(previous, now)
+        self.log(f"AI brief: {reason}")
+        self.summary_status = {"attempted": go, "reason": reason, "at": now.isoformat(timespec="seconds")}
+        if not go:
+            return previous                      # reuse as-is (it is still the latest brief)
         brief = {
             "indices": [{k: i.get(k) for k in ("name", "price", "chg_1d", "chg_5d", "chg_1m", "trend")} for i in indices],
             "stocks": [{**{k: s.get(k) for k in ("name", "symbol", "market", "price", "chg_1d", "chg_5d", "chg_1m", "rsi14", "trend")},
@@ -109,11 +123,16 @@ class MarketPipeline:
         except Exception as e:  # an AI hiccup must never break the data run
             print(f"summary failed: {type(e).__name__}", file=sys.stderr)
             text = None
-        stamp = latest_time.strftime("%a %d %b %Y, %I:%M %p MYT")
+        self.summary_status.update(getattr(self.summarizer, "status", {"ok": bool(text)}))
+        now_myt = now.astimezone(MYT)
+        stamp = now_myt.strftime("%a %d %b %Y, %I:%M %p MYT")
         if text:
-            self.store.save_summary(latest_time, session, stamp, text)
-            return {"text": text, "model": self.summarizer.name, "generated_at_myt": stamp}
-        return {**prev["summary"], "stale": True} if prev.get("summary") else None
+            self.store.save_summary(now_myt, session, stamp, text)
+            used = getattr(self.summarizer, "used_model", None)
+            return {"text": text, "model": self.summarizer.name, "model_id": used, "generated_at_myt": stamp,
+                    "generated_at": now.isoformat(timespec="seconds"), "session": session}
+        # tried and failed: keep the old one, flagged so the UI can say so
+        return {**previous, "stale": True} if previous else None
 
     @staticmethod
     def _snapshot(latest: dict) -> dict:

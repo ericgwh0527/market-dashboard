@@ -22,20 +22,7 @@ class GeminiSummarizer:
     name = "Gemini"
     ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
     FALLBACK_MODELS = ("gemini-flash-latest", "gemini-2.5-flash", "gemini-2.0-flash")
-
-    def __init__(self, api_key: str, model: str, http=None, max_chars: int = 24000):
-        if http is None:
-            import requests
-            http = requests
-        self.key, self.model, self.http, self.max_chars = api_key, model, http, max_chars
-
-    def summarize(self, brief: dict) -> str | None:
-        prompt = PROMPT.format(data=json.dumps(brief, ensure_ascii=False)[: self.max_chars])
-        for m in dict.fromkeys((self.model, *self.FALLBACK_MODELS)):
-            text = self._call(m, prompt)
-            if text:
-                return text
-        return None
+    MAX_REQUESTS = 4          # hard cap per run, so failures can't burn the free quota
 
     # Gemini 2.5+ "thinks" before answering and those tokens count against
     # maxOutputTokens – with a small limit the brief got cut off mid-sentence.
@@ -47,8 +34,34 @@ class GeminiSummarizer:
         {},                                          # models that reject thinkingConfig
     )
 
+    def __init__(self, api_key: str, model: str, http=None, max_chars: int = 24000):
+        if http is None:
+            import requests
+            http = requests
+        self.key, self.model, self.http, self.max_chars = api_key, model, http, max_chars
+        self.attempts: list[str] = []   # public-safe diagnostics, e.g. "gemini-2.5-flash: RESOURCE_EXHAUSTED"
+        self.used_model: str | None = None
+
+    @property
+    def status(self) -> dict:
+        return {"ok": self.used_model is not None, "model": self.used_model, "attempts": self.attempts}
+
+    def summarize(self, brief: dict) -> str | None:
+        prompt = PROMPT.format(data=json.dumps(brief, ensure_ascii=False)[: self.max_chars])
+        self.attempts, self.used_model = [], None
+        for m in dict.fromkeys((self.model, *self.FALLBACK_MODELS)):
+            if len(self.attempts) >= self.MAX_REQUESTS:
+                break
+            text = self._call(m, prompt)
+            if text:
+                self.used_model = m
+                return text
+        return None
+
     def _call(self, model: str, prompt: str) -> str | None:
         for extra in self.GENERATION_VARIANTS:
+            if len(self.attempts) >= self.MAX_REQUESTS:
+                return None
             config = {"temperature": 0.4, "maxOutputTokens": self.MAX_OUTPUT_TOKENS, **extra}
             try:
                 r = self.http.post(
@@ -58,26 +71,40 @@ class GeminiSummarizer:
                     timeout=90,
                 )
             except Exception as e:
-                print(f"Gemini {model} failed: {type(e).__name__}", file=sys.stderr)
+                self._note(model, type(e).__name__)
                 return None
             if r.status_code == 400 and extra:
-                continue                                    # try again without the optional setting
+                self._note(model, "HTTP 400 with thinkingConfig – retrying without")
+                continue
             if r.status_code != 200:
-                print(f"Gemini {model}: HTTP {r.status_code}", file=sys.stderr)   # never log the key
-                return None
+                self._note(model, f"HTTP {r.status_code} {self._error_status(r)}".strip())
+                return None                                  # 429/404 etc.: move on to the next model
             return self._complete_text(model, r.json())
         return None
 
+    def _note(self, model: str, what: str) -> None:
+        line = f"{model}: {what}"
+        self.attempts.append(line)
+        print(f"Gemini {line}", file=sys.stderr)             # never logs the key
+
     @staticmethod
-    def _complete_text(model: str, body: dict) -> str | None:
+    def _error_status(r) -> str:
+        """Google's error code word (e.g. RESOURCE_EXHAUSTED, NOT_FOUND) – safe to publish."""
+        try:
+            return str(r.json()["error"]["status"])[:40]
+        except Exception:
+            return ""
+
+    def _complete_text(self, model: str, body: dict) -> str | None:
         try:
             cand = body["candidates"][0]
             text = "".join(p.get("text", "") for p in cand["content"]["parts"]).strip()
         except (KeyError, IndexError, TypeError):
-            print(f"Gemini {model}: unexpected response shape", file=sys.stderr)
+            self._note(model, "unexpected response shape")
             return None
         reason = cand.get("finishReason", "STOP")
         if reason != "STOP":
-            print(f"Gemini {model}: incomplete answer (finishReason={reason}) – discarded", file=sys.stderr)
+            self._note(model, f"incomplete answer (finishReason={reason}) – discarded")
             return None
+        self.attempts.append(f"{model}: ok")
         return text or None

@@ -27,7 +27,7 @@ It runs entirely on free infrastructure: GitHub Actions fetches and analyses the
 | **News** | Google News and Yahoo Finance headlines by topic and per stock |
 | **Portfolio** | Holdings with P/L, day change, allocation and value history. Stored encrypted and **decrypted only in the browser** |
 
-Other details: responsive layout (bottom tab bar on mobile), light/dark theme, installable as a PWA, data refreshed after the Bursa close (17:35 MYT) and the US close (05:40 MYT).
+Other details: responsive layout (bottom tab bar on mobile), light/dark theme, installable as a PWA. Data refreshes on weekdays at 12:45 MYT (Bursa midday), 17:35 MYT (after the Bursa close) and 05:40 MYT (after the US close). The ↻ button opens GitHub's *Run workflow* page, which only the repo owner can use, so visitors can't trigger runs. The AI brief is regenerated only after each close (or on request), with a 1-hour cooldown and a per-run request cap, so repeated runs can't exhaust the API quota.
 
 ## Architecture
 

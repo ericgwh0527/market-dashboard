@@ -92,3 +92,19 @@ def test_gemini_retries_without_thinking_config_on_400():
 
     assert GeminiSummarizer("k", "gemini-2.0-flash", http=Http()).summarize({}) == "ok"
     assert seen == [True, False]
+
+
+def test_gemini_caps_requests_and_records_safe_status():
+    from dashboard.providers.gemini import GeminiSummarizer
+    calls = []
+
+    class Http:
+        def post(self, url, **kw):
+            calls.append(url)
+            return _Resp(429, {"error": {"status": "RESOURCE_EXHAUSTED", "message": "quota"}})
+
+    g = GeminiSummarizer("AQ.secret-key", "gemini-2.5-flash", http=Http())
+    assert g.summarize({}) is None
+    assert len(calls) <= GeminiSummarizer.MAX_REQUESTS
+    assert g.status["ok"] is False and "RESOURCE_EXHAUSTED" in g.status["attempts"][0]
+    assert "secret" not in str(g.status)

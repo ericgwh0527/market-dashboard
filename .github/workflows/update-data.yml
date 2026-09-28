@@ -2,9 +2,15 @@ name: Update market data
 
 on:
   schedule:
+    - cron: "45 4 * * 1-5"    # 12:45 MYT – Bursa lunch break (morning-session snapshot, no AI)
     - cron: "35 9 * * 1-5"    # 17:35 MYT – after Bursa Malaysia closes
     - cron: "40 21 * * 1-5"   # 05:40 MYT (next day) – after the US market closes
-  workflow_dispatch:          # "Run workflow" button in the Actions tab
+  workflow_dispatch:          # "Run workflow" button (only the repo owner can use it)
+    inputs:
+      ai_brief:
+        description: "Also refresh the AI brief (skipped if one was made in the last hour)"
+        type: boolean
+        default: false
   push:
     branches: [main]
     paths: ["config.json", "dashboard/**", "scripts/**", ".github/workflows/update-data.yml"]
@@ -48,7 +54,9 @@ jobs:
       - name: Fetch prices, indicators, news (+ optional Gemini brief)
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          SESSION: ${{ github.event.schedule == '35 9 * * 1-5' && 'after-bursa' || (github.event.schedule == '40 21 * * 1-5' && 'after-us' || '') }}
+          SESSION: ${{ github.event.schedule == '35 9 * * 1-5' && 'after-bursa' || (github.event.schedule == '40 21 * * 1-5' && 'after-us' || (github.event.schedule == '45 4 * * 1-5' && 'midday' || '')) }}
+          # AI brief: only after each close (auto), or on request (force); 1-hour cooldown either way
+          AI_MODE: ${{ (github.event_name == 'schedule' && github.event.schedule != '45 4 * * 1-5') && 'auto' || (inputs.ai_brief && 'force' || 'off') }}
         run: python scripts/fetch_data.py
 
       - name: Commit data
