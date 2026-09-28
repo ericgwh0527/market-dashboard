@@ -1,0 +1,22 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+    paths: ["dashboard/**", "scripts/**", "tests/**", "config.json", ".github/workflows/ci.yml"]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: scripts/requirements*.txt
+      - run: pip install -r scripts/requirements-dev.txt
+      - run: python -m pytest -q
+      - name: config.json is valid
+        run: python -c "from pathlib import Path; from dashboard.config import load_settings; s = load_settings(Path('config.json')); print(len(s.indices), 'indices,', len(s.stocks), 'stocks')"

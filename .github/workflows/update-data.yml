@@ -7,7 +7,7 @@ on:
   workflow_dispatch:          # "Run workflow" button in the Actions tab
   push:
     branches: [main]
-    paths: ["config.json", "scripts/**", ".github/workflows/update-data.yml"]
+    paths: ["config.json", "dashboard/**", "scripts/**", ".github/workflows/update-data.yml"]
 
 permissions:
   contents: write

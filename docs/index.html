@@ -14,24 +14,13 @@
   <link rel="stylesheet" href="style.css">
   <script src="vendor/lightweight-charts.standalone.production.js" defer></script>
   <script src="vendor/marked.min.js" defer></script>
-  <script src="app.js" defer></script>
+  <script src="js/main.js" type="module"></script>
 </head>
 <body>
   <header class="top">
     <div class="top-inner">
       <div class="brand"><span class="brand-dot"></span>Market Dashboard</div>
-      <nav class="tabs" id="tabs" role="tablist" aria-label="Sections">
-        <button role="tab" data-view="overview" aria-selected="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l3-3 4 4 5-6 6 6"/><path d="M3 20h18"/></svg>Overview</button>
-        <button role="tab" data-view="watchlist" aria-selected="false">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Watchlist</button>
-        <button role="tab" data-view="signals" aria-selected="false">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Signals</button>
-        <button role="tab" data-view="news" aria-selected="false">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h13v16H6a2 2 0 0 1-2-2V4z"/><path d="M17 8h3v10a2 2 0 0 1-2 2"/><path d="M8 8h5M8 12h5M8 16h3"/></svg>News</button>
-        <button role="tab" data-view="portfolio" aria-selected="false">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Portfolio</button>
-      </nav>
+      <nav class="tabs" id="tabs" role="tablist" aria-label="Sections"></nav>
       <div class="updated" id="updated"></div>
       <button class="icon-btn" id="themeBtn" aria-label="Toggle dark mode" title="Toggle dark mode">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
@@ -40,67 +29,7 @@
   </header>
 
   <main>
-    <!-- OVERVIEW -->
-    <section class="view active" id="view-overview">
-      <div id="summaryWrap"></div>
-      <h2>Markets</h2>
-      <div class="grid tiles" id="indexTiles"><div class="card skeleton" style="height:110px"></div><div class="card skeleton" style="height:110px"></div></div>
-      <div class="cols two">
-        <div>
-          <h2>Top movers today</h2>
-          <div class="card list" id="movers" style="padding:0"></div>
-          <h2>Themes / sectors <button class="info" data-term="theme"></button></h2>
-          <div class="card list" id="themes" style="padding:4px 0"></div>
-        </div>
-        <div>
-          <h2>Headlines</h2>
-          <div class="card list" id="headlines" style="padding:0"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- WATCHLIST -->
-    <section class="view" id="view-watchlist">
-      <div class="controls">
-        <div class="seg" id="mktSeg">
-          <button data-v="all" aria-pressed="true">All</button><button data-v="MY" aria-pressed="false">Bursa</button><button data-v="US" aria-pressed="false">US</button>
-        </div>
-        <select id="sortSel" aria-label="Sort by">
-          <option value="chg_1d">Sort: today %</option>
-          <option value="chg_5d">Sort: 5-day %</option>
-          <option value="chg_1m">Sort: 1-month %</option>
-          <option value="chg_ytd">Sort: YTD %</option>
-          <option value="rsi14">Sort: RSI</option>
-          <option value="from_hi_52w">Sort: vs 52w high</option>
-          <option value="name">Sort: name</option>
-        </select>
-        <input type="search" id="wlSearch" placeholder="Search…" style="flex:1;min-width:120px">
-      </div>
-      <div class="card list" id="watchlist" style="padding:0"></div>
-      <p class="faint" style="margin-top:10px">Edit what's tracked in <code>config.json</code> in the repo.</p>
-    </section>
-
-    <!-- SIGNALS -->
-    <section class="view" id="view-signals">
-      <h2>Screens <button class="info" data-term="screen"></button></h2>
-      <div id="screens"></div>
-      <h2>All signals today</h2>
-      <div class="card list" id="allSignals" style="padding:0"></div>
-      <h2>Learn the terms</h2>
-      <div class="card"><dl class="glossary" id="glossary"></dl></div>
-    </section>
-
-    <!-- NEWS -->
-    <section class="view" id="view-news">
-      <div class="controls"><div class="seg" id="newsSeg"></div></div>
-      <div class="card list" id="newsList" style="padding:0"></div>
-    </section>
-
-    <!-- PORTFOLIO -->
-    <section class="view" id="view-portfolio">
-      <div id="portfolio"></div>
-    </section>
-
+    <!-- tab sections are created by js/main.js from js/views/index.js -->
     <p class="disclaimer">Data: Yahoo Finance (delayed, end-of-day) &amp; Google News. For learning only – not financial advice.</p>
   </main>
 
