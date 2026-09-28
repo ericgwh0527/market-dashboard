@@ -26,7 +26,7 @@ export const GLOSSARY = {
 export const glossaryHTML = () =>
   Object.values(GLOSSARY).map(([t, d]) => `<dt>${esc(t)}</dt><dd>${esc(d)}</dd>`).join("");
 
-/** Shows a definition next to any `.info[data-term]` button that is clicked. */
+/** Shows a definition next to any `.info-btn[data-term]` button that is clicked. */
 export class GlossaryPopover {
   constructor(el) {
     this.el = el;
@@ -40,7 +40,7 @@ export class GlossaryPopover {
 
   /** Returns true if the click was on an info button (so callers can stop). */
   handleClick(e) {
-    const btn = e.target.closest(".info[data-term]");
+    const btn = e.target.closest(".info-btn[data-term]");
     if (!btn) { this.hide(); return false; }
     e.stopPropagation();
     const g = GLOSSARY[btn.dataset.term];

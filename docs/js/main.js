@@ -129,7 +129,8 @@ class App {
 
   #renderUpdated() {
     const d = this.data;
-    const short = d.generated_at_myt.replace(/^\w+ /, "").replace(/ \d{4},/, ",");
+    // "Mon 28 Sep 2026, 07:46 PM MYT" -> "28 Sep, 7:46 PM" (full text in the tooltip)
+    const short = d.generated_at_myt.replace(/^\w+ /, "").replace(/ \d{4},/, ",").replace(/ MYT$/, "").replace(/, 0(\d)/, ", $1");
     $("#updated").innerHTML = `<span class="lbl">Updated<br></span><span title="${esc(d.generated_at_myt)}">${esc(short)}</span>${d.ageHours > 30 ? ' <span class="pill warn">stale</span>' : ""}`;
   }
 }

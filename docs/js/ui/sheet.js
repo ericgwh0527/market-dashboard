@@ -117,8 +117,9 @@ export class StockSheet {
           ${segmented("rangeSeg", ["1M", "3M", "6M", "1Y"].map((r) => [r, r]), this.range)}
           ${segmented("typeSeg", [["line", "Line"], ["candle", "Candles"]], this.type)}
         </div>
-        <div class="card" data-u="padding-8px"><div class="chart-box" id="priceChart"><div class="chart-legend" id="priceLegend"></div></div></div>
-        <div class="card" data-u="padding-8px-margin-top-8px"><div class="chart-box small" id="rsiChart"><div class="chart-legend" id="rsiLegend"></div></div></div>
+        <div class="card" data-u="padding-8px"><div class="chart-legend" id="priceLegend"></div><div class="chart-box" id="priceChart"></div></div>
+        <div class="card" data-u="padding-8px-margin-top-8px"><div class="chart-legend" id="rsiLegend"></div><div class="chart-box small" id="rsiChart"></div>
+          <div class="rsi-note">Dashed lines: above 70 = overbought, below 30 = oversold ${infoBtn("rsi")}</div></div>
 
         ${(s.signals || []).length ? `<h2>Signals</h2><div class="signal-list">${s.signals.map((g) =>
           `<div class="signal ${esc(g.type)}"><span class="ico">${signalIcon(g.type)}</span><span>${esc(g.text)}</span></div>`).join("")}</div>` : ""}

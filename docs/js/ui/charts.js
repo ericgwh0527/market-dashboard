@@ -61,7 +61,8 @@ export function rsiChart(el, series, { range = "6M" } = {}) {
   const line = chart.addLineSeries({ color: cssVar("--series-1"), lineWidth: 2, priceLineVisible: false });
   line.setData(points(series, idx, "rsi"));
   for (const v of [70, 30]) {
-    line.createPriceLine({ price: v, color: cssVar("--text-3"), lineWidth: 1, lineStyle: 2, axisLabelVisible: true, title: v === 70 ? "overbought" : "oversold" });
+    // dashed guides only – their meaning is written in the legend, so nothing overlaps the axis
+    line.createPriceLine({ price: v, color: cssVar("--text-3"), lineWidth: 1, lineStyle: 2, axisLabelVisible: false, title: "" });
   }
   line.applyOptions({ autoscaleInfoProvider: () => ({ priceRange: { minValue: 0, maxValue: 100 } }) });
   chart.timeScale().fitContent();
