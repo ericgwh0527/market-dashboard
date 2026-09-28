@@ -1,6 +1,6 @@
 yfinance>=0.2.54
 pandas>=2.1
 numpy>=1.26
-feedparser>=6.0
+feedparser>=6.0.14
 requests>=2.31
 cryptography>=42
