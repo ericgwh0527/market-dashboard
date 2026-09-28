@@ -2,7 +2,7 @@ import { $, esc } from "../core/dom.js";
 import { dir, fmt, money, pct, signedMoney } from "../core/format.js";
 import { cryptoAvailable, decrypt, deriveKey } from "../data/crypto.js";
 import { chartsReady, valueChart } from "../ui/charts.js";
-import { infoBtn, lockIcon } from "../ui/components.js";
+import { applyGeometry, infoBtn, lockIcon } from "../ui/components.js";
 import { View } from "./view.js";
 
 const MARKET_LABEL = { MY: "Bursa", US: "US" };
@@ -47,13 +47,13 @@ export class PortfolioView extends View {
 
   #message(title, text) {
     this.#root.innerHTML = `<div class="card lock"><div class="lock-ico">${lockIcon}</div><b>${esc(title)}</b>
-      <p class="muted" style="font-size:14px">${esc(text)}</p></div>`;
+      <p class="muted" data-u="font-size-14px">${esc(text)}</p></div>`;
   }
 
   #lockForm(blob) {
     this.#root.innerHTML = `<div class="card lock">
       <div class="lock-ico">${lockIcon}</div><b>Portfolio is locked</b>
-      <p class="muted" style="font-size:14px;margin:6px 0 0">It's encrypted (AES-256). Enter your passphrase – it never leaves this device.</p>
+      <p class="muted" data-u="font-size-14px-margin-6px-0-0">It's encrypted (AES-256). Enter your passphrase – it never leaves this device.</p>
       <form id="unlockForm" autocomplete="off">
         <input type="password" id="pw" placeholder="Passphrase" aria-label="Passphrase" autocomplete="current-password" required>
         <label class="chk"><input type="checkbox" id="remember"> Keep unlocked on this device for ${REMEMBER_DAYS} days (only on your own phone/PC)</label>
@@ -92,23 +92,24 @@ export class PortfolioView extends View {
       <div class="card">
         <div class="hero">
           <div><div class="h-k">Total value</div><div class="h-v num">${money(t.value, bc)}</div></div>
-          <div><div class="h-k">Today</div><div class="h-v sm num ${dir(t.day_pl)}">${signedMoney(t.day_pl, bc)} <span style="font-size:14px">${pct(t.day_pl_pct)}</span></div></div>
-          <div><div class="h-k">Unrealised P/L ${infoBtn("pl")}</div><div class="h-v sm num ${dir(t.pl)}">${signedMoney(t.pl, bc)} <span style="font-size:14px">${pct(t.pl_pct)}</span></div></div>
+          <div><div class="h-k">Today</div><div class="h-v sm num ${dir(t.day_pl)}">${signedMoney(t.day_pl, bc)} <span data-u="font-size-14px">${pct(t.day_pl_pct)}</span></div></div>
+          <div><div class="h-k">Unrealised P/L ${infoBtn("pl")}</div><div class="h-v sm num ${dir(t.pl)}">${signedMoney(t.pl, bc)} <span data-u="font-size-14px">${pct(t.pl_pct)}</span></div></div>
           <div><div class="h-k">Cash</div><div class="h-v sm num">${money(t.cash, bc)}</div></div>
         </div>
-        <div class="faint" style="margin-top:8px">Valued ${esc(p.generated_at_myt)} · USD/MYR ${fmt(p.usdmyr, 4)}${p.holdings_updated ? " · holdings as of " + esc(p.holdings_updated) : ""}</div>
+        <div class="faint" data-u="margin-top-8px">Valued ${esc(p.generated_at_myt)} · USD/MYR ${fmt(p.usdmyr, 4)}${p.holdings_updated ? " · holdings as of " + esc(p.holdings_updated) : ""}</div>
       </div>
-      ${hasHistory ? `<h2>Value over time</h2><div class="card" style="padding:8px"><div class="chart-box" id="pfChart" style="height:220px"></div></div>` : ""}
+      ${hasHistory ? `<h2>Value over time</h2><div class="card" data-u="padding-8px"><div class="chart-box" id="pfChart" data-u="height-220px"></div></div>` : ""}
       <h2>Allocation</h2>
       <div class="card">${p.allocation.map((a) => `<div class="alloc-row"><div>${esc(MARKET_LABEL[a.name] || a.name)}</div>
-        <div><div class="alloc-bar" style="width:${((a.pct || 0) / maxPct) * 100}%"></div></div><div class="num" style="text-align:right">${fmt(a.pct, 1)}%</div></div>`).join("")}</div>
+        <div><div class="alloc-bar" data-width="${((a.pct || 0) / maxPct) * 100}"></div></div><div class="num" data-u="text-align-right">${fmt(a.pct, 1)}%</div></div>`).join("")}</div>
       <h2>Positions</h2>
-      <div class="card list pos-cards" style="padding:0">${p.positions.map((r) => this.#positionCard(r, bc)).join("")}</div>
-      <div class="card pos-table" style="padding:4px 0"><div class="tbl-wrap"><table class="tbl num">
+      <div class="card list pos-cards" data-u="padding-0">${p.positions.map((r) => this.#positionCard(r, bc)).join("")}</div>
+      <div class="card pos-table" data-u="padding-4px-0"><div class="tbl-wrap"><table class="tbl num">
         <thead><tr><th>Stock</th><th>Value</th><th>P/L</th><th>P/L %</th><th>Today</th><th>Weight</th><th>Shares</th><th>Avg cost</th><th>Price</th></tr></thead>
         <tbody>${p.positions.map((r) => this.#positionRow(r, bc)).join("")}</tbody></table></div></div>
       ${p.cash.length ? `<p class="faint">Cash: ${p.cash.map((c) => `${esc(c.currency)} ${fmt(c.amount)}`).join(" · ")}</p>` : ""}
-      <div style="text-align:center;margin-top:16px"><button class="btn ghost" id="lockBtn">Lock on this device</button></div>`;
+      <div data-u="text-align-center-margin-top-16px"><button class="btn ghost" id="lockBtn">Lock on this device</button></div>`;
+    applyGeometry(this.#root);
     $("#lockBtn", this.#root).addEventListener("click", () => this.#lock());
 
     this.#chart?.remove(); this.#chart = null;

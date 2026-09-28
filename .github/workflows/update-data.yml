@@ -10,13 +10,15 @@ on:
     paths: ["config.json", "dashboard/**", "scripts/**", ".github/workflows/update-data.yml"]
 
 # Security notes (this repo and its Actions logs are PUBLIC):
-# * Default token is read-only; only the job that commits data gets contents:write.
-# * Actions are pinned to full commit SHAs, and Python packages to exact versions
-#   with hashes, so a hijacked tag or package release can't run code here.
-# * The checkout does not leave the write token in .git/config
-#   (persist-credentials: false), so third-party code (yfinance, pandas…)
-#   running in earlier steps can't read it. The token is only used in the commit step.
-# * Each secret is given only to the step that needs it.
+# * Default token is read-only; each job that commits gets contents:write.
+# * Actions are pinned to commit SHAs, Python packages to exact versions + hashes.
+# * The write token is never left in .git/config (persist-credentials: false);
+#   it is only handed to git in the final commit step.
+# * Two separate jobs = two separate VMs:
+#     market     – public data; runs yfinance/pandas/etc.; only sees GEMINI_API_KEY
+#     portfolio  – private holdings; installs ONLY `cryptography`; only sees the
+#                  read-only holdings token and the passphrase
+#   so no third-party market-data package ever runs next to the passphrase.
 permissions:
   contents: read
 
@@ -25,13 +27,11 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  update:
+  market:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
       contents: write
-    env:
-      HAS_PRIVATE: ${{ secrets.PRIVATE_REPO_TOKEN != '' }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
@@ -51,7 +51,36 @@ jobs:
           SESSION: ${{ github.event.schedule == '35 9 * * 1-5' && 'after-bursa' || (github.event.schedule == '40 21 * * 1-5' && 'after-us' || '') }}
         run: python scripts/fetch_data.py
 
-      # ---- private holdings: read-only checkout, encrypted output, plaintext never committed
+      - name: Commit data
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/commit_data.sh "data"
+
+  portfolio:
+    needs: market
+    if: always()                       # still value the portfolio if market data failed
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    env:
+      HAS_PRIVATE: ${{ secrets.PRIVATE_REPO_TOKEN != '' && secrets.HOLDINGS_PASSPHRASE != '' }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        if: env.HAS_PRIVATE == 'true'
+        with:
+          ref: main                    # pick up the market job's fresh commit
+          persist-credentials: false
+
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        if: env.HAS_PRIVATE == 'true'
+        with:
+          python-version: "3.12"
+
+      - name: Install cryptography only
+        if: env.HAS_PRIVATE == 'true'
+        run: pip install --require-hashes -r scripts/requirements-portfolio.lock
+
       - name: Check out private holdings repo
         if: env.HAS_PRIVATE == 'true'
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
@@ -72,17 +101,8 @@ jobs:
         if: always()
         run: rm -rf .private
 
-      - name: Commit data
+      - name: Commit encrypted portfolio
+        if: env.HAS_PRIVATE == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          # Belt and braces: never commit anything outside docs/data, and never plaintext holdings.
-          git add docs/data
-          if git diff --cached --name-only | grep -Ev '^docs/data/' ; then echo "Refusing: unexpected paths staged"; exit 1; fi
-          if git diff --cached --name-only | grep -qi 'holdings'; then echo "Refusing: holdings file staged"; exit 1; fi
-          if git diff --cached --quiet; then echo "No changes"; exit 0; fi
-          git -c user.name="market-data-bot" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
-              commit -m "data: $(TZ=Asia/Kuala_Lumpur date '+%Y-%m-%d %H:%M MYT')"
-          auth="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
-          git -c http.https://github.com/.extraheader="$auth" pull --rebase --autostash
-          git -c http.https://github.com/.extraheader="$auth" push
+        run: bash scripts/commit_data.sh "portfolio"

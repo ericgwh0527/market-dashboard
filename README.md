@@ -58,13 +58,14 @@ The interesting constraint: *a public repo and a public website, but private hol
 - The browser decrypts with the **Web Crypto API**. The optional "keep unlocked" stores only a **non-extractable `CryptoKey`** in IndexedDB, never the passphrase, and it expires after 30 days.
 
 **Hardening the website**
-- A strict **Content-Security-Policy**: only first-party scripts, styles, data and images, and no third-party requests.
+- A strict **Content-Security-Policy**: only first-party scripts, styles, data and images. There are no inline styles (the chart library's one `<style>` block is allowed by hash) and no third-party requests.
 - All external text (news titles, AI output, market data fields) is escaped. Links must be `http(s)`. The AI brief is rendered by a minimal Markdown renderer that **cannot emit links, images or HTML**, which blocks prompt-injected `javascript:` links from news headlines.
 - Clickjacking protection (the page won't run inside a frame) and `no-referrer`.
 
 **Hardening the pipeline (supply chain)**
-- Read-only default `GITHUB_TOKEN`. Write access exists only for the data job and is **not persisted** into `.git/config`, so third-party Python code can't read it.
-- Actions are **pinned to commit SHAs**. Python dependencies are pinned **with hashes** (`pip install --require-hashes`).
+- **Job isolation:** market data (yfinance, pandas, Gemini) and the portfolio run as **separate jobs on separate VMs**. The portfolio job installs only `cryptography` and fetches quotes with a standard-library client, so no third-party market-data package ever runs next to the passphrase.
+- Read-only default `GITHUB_TOKEN`. Write access is **not persisted** into `.git/config`; it's handed to git only in the final commit step.
+- Actions are **pinned to commit SHAs**. Python dependencies are pinned **with hashes** (`pip install --require-hashes`). Dependabot proposes updates.
 - Each secret is scoped to the single step that needs it. The Gemini key travels in a header, never in a URL or log.
 - CI fails if a holdings file or anything shaped like an API key or token is ever committed.
 

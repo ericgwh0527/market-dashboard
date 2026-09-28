@@ -3,8 +3,10 @@
 Security model (details in README):
 * holdings.json lives in a PRIVATE repo; the workflow checks it out read-only and
   deletes it before committing. It is never written to this public repo.
-* Prices for your holdings are fetched with a *quiet* provider (no log output),
-  and no per-holding files are written, so nothing public reveals what you own.
+* This runs in its own job that installs only `cryptography`; prices come from a
+  stdlib-only client, so no third-party package ever sees the passphrase.
+* Nothing is logged about positions and no per-holding files are written,
+  so nothing public reveals what you own.
 * Only docs/data/portfolio.enc.json (AES-256-GCM, PBKDF2 600k) is published.
 
 Env: HOLDINGS_FILE, HOLDINGS_PASSPHRASE. If either is missing, it exits quietly.
@@ -21,7 +23,7 @@ sys.path.insert(0, str(ROOT))
 
 from dashboard.portfolio.crypto import AesGcmCipher  # noqa: E402
 from dashboard.portfolio.service import PortfolioService  # noqa: E402
-from dashboard.providers.yahoo import YahooPriceProvider  # noqa: E402
+from dashboard.portfolio.quotes import YahooChartQuotes  # noqa: E402
 from dashboard.storage import DataStore  # noqa: E402
 
 
@@ -36,7 +38,7 @@ def main() -> int:
         print("Portfolio: holdings.json is not valid JSON – skipping.")
         return 1
     service = PortfolioService(
-        prices=YahooPriceProvider(quiet=True, min_rows=1),
+        quotes=YahooChartQuotes(),   # stdlib only – no third-party code runs next to the passphrase
         cipher=AesGcmCipher(pw),
         store=DataStore(ROOT / "docs" / "data"),
     )

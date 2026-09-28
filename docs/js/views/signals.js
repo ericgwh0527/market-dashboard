@@ -14,7 +14,7 @@ export class SignalsView extends View {
       <h2>Screens ${infoBtn("screen")}</h2>
       <div id="screens"></div>
       <h2>All signals today</h2>
-      <div class="card list" id="allSignals" style="padding:0"></div>
+      <div class="card list" id="allSignals" data-u="padding-0"></div>
       <h2>Learn the terms</h2>
       <div class="card"><dl class="glossary">${glossaryHTML()}</dl></div>`;
   }
@@ -25,8 +25,8 @@ export class SignalsView extends View {
       .sort((a, b) => SIGNAL_ORDER[a.g.type] - SIGNAL_ORDER[b.g.type]);
     $("#allSignals", this.section).innerHTML = items.map(({ s, g }) => `
       <div class="row" data-sym="${esc(s.symbol)}" tabindex="0">
-        <div><div class="r-name">${esc(s.name)} <span class="faint">${esc(s.symbol)}</span></div><div class="r-sub" style="white-space:normal">${signalIcon(g.type)} ${esc(g.text)}</div></div>
-        <div class="r-right num ${dir(s.chg_1d)}" style="font-weight:600;font-size:13px">${pct(s.chg_1d)}</div></div>`).join("") ||
+        <div><div class="r-name">${esc(s.name)} <span class="faint">${esc(s.symbol)}</span></div><div class="r-sub" data-u="white-space-normal">${signalIcon(g.type)} ${esc(g.text)}</div></div>
+        <div class="r-right num ${dir(s.chg_1d)}" data-u="font-weight-600-font-size-13px">${pct(s.chg_1d)}</div></div>`).join("") ||
       empty("No signals today.");
   }
 

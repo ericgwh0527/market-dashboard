@@ -26,10 +26,10 @@ export class WatchlistView extends View {
       <div class="controls">
         ${segmented("mktSeg", [["all", "All"], ["MY", "Bursa"], ["US", "US"]], this.market)}
         <select id="sortSel" aria-label="Sort by">${SORTS.map(([v, l]) => `<option value="${v}">Sort: ${l}</option>`).join("")}</select>
-        <input type="search" id="wlSearch" placeholder="Search…" style="flex:1;min-width:120px">
+        <input type="search" id="wlSearch" placeholder="Search…" data-u="flex-1-min-width-120px">
       </div>
-      <div class="card list" id="watchlist" style="padding:0"></div>
-      <p class="faint" style="margin-top:10px">Edit what's tracked in <code>config.json</code> in the repo.</p>`;
+      <div class="card list" id="watchlist" data-u="padding-0"></div>
+      <p class="faint" data-u="margin-top-10px">Edit what's tracked in <code>config.json</code> in the repo.</p>`;
   }
 
   init(ctx) {
@@ -65,7 +65,7 @@ export class WatchlistView extends View {
       <div><div class="r-name">${esc(s.name)} ${s.stale ? '<span class="pill warn">stale</span>' : ""}</div>
         <div class="r-sub">${esc(s.symbol)} · ${trendPill(s.trend, true)} ${extra ? "· " + extra : ""}</div></div>
       ${spark(s.spark)}
-      <div class="r-right num"><div class="r-price">${priceStr(s)}</div><div class="${dir(s.chg_1d)}" style="font-size:13px;font-weight:600">${arrow(s.chg_1d)}${pct(s.chg_1d)}</div></div>
+      <div class="r-right num"><div class="r-price">${priceStr(s)}</div><div class="${dir(s.chg_1d)}" data-u="font-size-13px-font-weight-600">${arrow(s.chg_1d)}${pct(s.chg_1d)}</div></div>
     </div>`;
   }
 }

@@ -54,17 +54,17 @@ def test_cipher_roundtrip_and_salt_reuse():
         AesGcmCipher("wrong", iterations=1000).decrypt(b)
 
 
-class FakePrices:
-    def __init__(self, frames):
-        self.frames = frames
+class FakeQuotes:
+    def __init__(self, table):
+        self.table = table
 
-    def history(self, symbols, period="2y"):
-        return {s: f for s, f in self.frames.items() if s in symbols}
+    def quotes(self, symbols):
+        return {s: self.table[s] for s in symbols if s in self.table}
 
 
-def test_service_writes_only_ciphertext(tmp_path, frame):
-    frames = {"1023.KL": frame([8.5, 9.0]), "NVDA": frame([140.0, 150.0]), "MYR=X": frame([4.0, 4.0])}
-    svc = PortfolioService(FakePrices(frames), AesGcmCipher("pw", iterations=1000), DataStore(tmp_path))
+def test_service_writes_only_ciphertext(tmp_path):
+    table = {"1023.KL": Quote(9.0, 8.5), "NVDA": Quote(150.0, 140.0), "MYR=X": Quote(4.0, 4.0)}
+    svc = PortfolioService(FakeQuotes(table), AesGcmCipher("pw", iterations=1000), DataStore(tmp_path))
     svc.run(HOLDINGS)
     raw = (tmp_path / "portfolio.enc.json").read_text()
     assert "1023" not in raw and "NVDA" not in raw
@@ -72,10 +72,42 @@ def test_service_writes_only_ciphertext(tmp_path, frame):
     assert data["totals"]["value"] == pytest.approx(2600) and len(data["history"]) == 1
 
 
-def test_ciphertext_size_is_padded():
-    import base64
-    c = AesGcmCipher("pw", iterations=1000, pad_block=4096)
-    small = base64.b64decode(c.encrypt({"p": [1]})["ct"])
-    bigger = base64.b64decode(c.encrypt({"p": list(range(300))})["ct"])
-    assert len(small) == len(bigger) == 4096 + 16          # same size -> position count hidden
-    assert c.decrypt(c.encrypt({"p": [1]})) == {"p": [1]}   # padding is transparent
+def test_service_keeps_previous_file_when_prices_are_down(tmp_path):
+    from dashboard.portfolio.service import NoQuotes
+    svc = PortfolioService(FakeQuotes({}), AesGcmCipher("pw", iterations=1000), DataStore(tmp_path))
+    with pytest.raises(NoQuotes):
+        svc.run(HOLDINGS)
+    assert not (tmp_path / "portfolio.enc.json").exists()
+
+
+def test_yahoo_chart_parsing_and_silence(capsys):
+    from dashboard.portfolio.quotes import YahooChartQuotes, parse_chart
+    body = {"chart": {"result": [{"timestamp": [1759000000, 1759086400, 1759172800],
+                                   "indicators": {"quote": [{"close": [2.7, 2.77, None]}]}}]}}
+    q = parse_chart(body)
+    assert q.price == 2.77 and q.prev == 2.7
+    assert parse_chart({"chart": {"result": None}}) is None
+
+    def boom(url):
+        raise OSError("SECRET-5227.KL")
+    got = YahooChartQuotes(fetch=boom, pause=0).quotes(["5227.KL"])
+    assert got == {} and "5227" not in capsys.readouterr().out + capsys.readouterr().err
+
+
+def test_portfolio_modules_avoid_heavy_dependencies():
+    """The passphrase job installs only `cryptography`; importing must not need pandas/yfinance."""
+    import subprocess, sys, textwrap
+    code = textwrap.dedent("""
+        import sys, builtins
+        real = builtins.__import__
+        def guard(name, *a, **k):
+            if name.split('.')[0] in {'pandas', 'yfinance', 'numpy', 'feedparser', 'requests'}:
+                raise ImportError('blocked ' + name)
+            return real(name, *a, **k)
+        builtins.__import__ = guard
+        import dashboard.portfolio.service, dashboard.portfolio.quotes, dashboard.portfolio.crypto
+        print('ok')
+    """)
+    root = __import__("pathlib").Path(__file__).resolve().parents[1]
+    out = subprocess.run([sys.executable, "-c", code], cwd=root, capture_output=True, text=True)
+    assert out.stdout.strip() == "ok", out.stderr

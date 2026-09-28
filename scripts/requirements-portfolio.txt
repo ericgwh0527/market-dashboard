@@ -1,0 +1,2 @@
+# Only what the passphrase job needs (see scripts/build_portfolio.py)
+cryptography>=42

@@ -11,8 +11,8 @@ export class NewsView extends View {
   topic = ALL;
 
   template() {
-    return `<div class="controls"><div class="seg" id="newsSeg" style="flex-wrap:wrap"></div></div>
-      <div class="card list" id="newsList" style="padding:0"></div>`;
+    return `<div class="controls"><div class="seg" id="newsSeg" data-u="flex-wrap-wrap"></div></div>
+      <div class="card list" id="newsList" data-u="padding-0"></div>`;
   }
 
   init(ctx) {

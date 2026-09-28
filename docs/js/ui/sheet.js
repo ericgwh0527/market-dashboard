@@ -66,9 +66,9 @@ export class StockSheet {
       if (i == null) return;
       const chg = i > 0 ? (sr.c[i] / sr.c[i - 1] - 1) * 100 : null;
       legend.innerHTML = `<span><b>${esc(sr.d[i])}</b></span>
-        <span><span class="swatch" style="background:var(--series-1)"></span>Close <b>${fmt(sr.c[i])}</b> <span class="${dir(chg)}">${pct(chg)}</span></span>
-        <span><span class="swatch" style="background:var(--series-2)"></span>50d <b>${fmt(sr.sma50[i])}</b></span>
-        <span><span class="swatch" style="background:var(--series-3)"></span>200d <b>${fmt(sr.sma200[i])}</b></span>`;
+        <span><span class="swatch" data-u="background-var-series-1"></span>Close <b>${fmt(sr.c[i])}</b> <span class="${dir(chg)}">${pct(chg)}</span></span>
+        <span><span class="swatch" data-u="background-var-series-2"></span>50d <b>${fmt(sr.sma50[i])}</b></span>
+        <span><span class="swatch" data-u="background-var-series-3"></span>200d <b>${fmt(sr.sma200[i])}</b></span>`;
       rsiLegend.innerHTML = `RSI (14) <b>${fmt(sr.rsi[i], 1)}</b>`;
     };
     setLegends(last);
@@ -100,25 +100,25 @@ export class StockSheet {
 
     return `
       <div class="sheet-head">
-        <div style="flex:1;min-width:0">
-          <div id="sheetTitle" style="font-weight:700;font-size:18px">${esc(s.name)}</div>
+        <div data-u="flex-1-min-width-0">
+          <div id="sheetTitle" data-u="font-weight-700-font-size-18px">${esc(s.name)}</div>
           <div class="faint">${[s.symbol, f.sector, s.theme].filter(Boolean).map(esc).join(" · ")}</div>
         </div>
         <button class="icon-btn" id="closeSheet" aria-label="Close">${closeIcon}</button>
       </div>
       <div class="sheet-body">
-        <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
+        <div data-u="display-flex-align-items-baseline-gap-10px-flex-">
           <div class="big-price num">${priceStr(s)}</div>
-          <div class="num ${dir(s.chg_1d)}" style="font-weight:650">${arrow(s.chg_1d)}${pct(s.chg_1d)} today</div>
+          <div class="num ${dir(s.chg_1d)}" data-u="font-weight-650">${arrow(s.chg_1d)}${pct(s.chg_1d)} today</div>
           ${trendPill(s.trend)}${infoBtn("trend")}
         </div>
         <div class="faint">Close of ${esc(s.date)}</div>
-        <div class="controls" style="margin-top:12px">
+        <div class="controls" data-u="margin-top-12px">
           ${segmented("rangeSeg", ["1M", "3M", "6M", "1Y"].map((r) => [r, r]), this.range)}
           ${segmented("typeSeg", [["line", "Line"], ["candle", "Candles"]], this.type)}
         </div>
-        <div class="card" style="padding:8px"><div class="chart-box" id="priceChart"><div class="chart-legend" id="priceLegend"></div></div></div>
-        <div class="card" style="padding:8px;margin-top:8px"><div class="chart-box small" id="rsiChart"><div class="chart-legend" id="rsiLegend"></div></div></div>
+        <div class="card" data-u="padding-8px"><div class="chart-box" id="priceChart"><div class="chart-legend" id="priceLegend"></div></div></div>
+        <div class="card" data-u="padding-8px-margin-top-8px"><div class="chart-box small" id="rsiChart"><div class="chart-legend" id="rsiLegend"></div></div></div>
 
         ${(s.signals || []).length ? `<h2>Signals</h2><div class="signal-list">${s.signals.map((g) =>
           `<div class="signal ${esc(g.type)}"><span class="ico">${signalIcon(g.type)}</span><span>${esc(g.text)}</span></div>`).join("")}</div>` : ""}
@@ -141,7 +141,7 @@ export class StockSheet {
           ${f.next_earnings ? stat("Next earnings", esc(f.next_earnings)) : ""}
         </div>` : ""}
 
-        ${(s.news || []).length ? `<h2>News</h2><div class="card list" style="padding:0">${s.news.map(newsItem).join("")}</div>` : ""}
+        ${(s.news || []).length ? `<h2>News</h2><div class="card list" data-u="padding-0">${s.news.map(newsItem).join("")}</div>` : ""}
       </div>`;
   }
 }

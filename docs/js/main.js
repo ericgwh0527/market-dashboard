@@ -39,7 +39,7 @@ class App {
       this.data = await this.api.latest();
     } catch {
       $("#view-overview #indexTiles").innerHTML =
-        `<div class="card empty" style="grid-column:1/-1">No data yet. The first scheduled run fills this in – or trigger it from the repo's Actions tab.</div>`;
+        `<div class="card empty" data-u="grid-column-1-1">No data yet. The first scheduled run fills this in – or trigger it from the repo's Actions tab.</div>`;
       return;
     }
     this.loadedAt = Date.now();

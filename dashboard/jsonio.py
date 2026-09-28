@@ -5,19 +5,23 @@ import json
 import math
 from pathlib import Path
 
-import numpy as np
+try:  # numpy is optional: the portfolio job runs with only the stdlib + cryptography
+    import numpy as np
+    _BOOL, _FLOAT, _INT = (bool, np.bool_), (float, np.floating), (np.integer,)
+except ImportError:  # pragma: no cover
+    _BOOL, _FLOAT, _INT = (bool,), (float,), ()
 
 
 def clean(v, ndigits: int = 4):
     """NaN/inf -> None, numpy scalars -> python, floats rounded, recursively."""
     if v is None:
         return None
-    if isinstance(v, (bool, np.bool_)):
+    if isinstance(v, _BOOL):
         return bool(v)
-    if isinstance(v, (np.floating, float)):
+    if isinstance(v, _FLOAT):
         v = float(v)
         return None if (math.isnan(v) or math.isinf(v)) else round(v, ndigits)
-    if isinstance(v, np.integer):
+    if _INT and isinstance(v, _INT):
         return int(v)
     if isinstance(v, dict):
         return {k: clean(x, ndigits) for k, x in v.items()}

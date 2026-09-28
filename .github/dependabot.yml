@@ -1,0 +1,11 @@
+# Pinned versions only stay safe if they get updated: Dependabot opens PRs
+# for new releases of the pinned GitHub Actions and Python packages.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: { interval: weekly }
+  - package-ecosystem: pip
+    directory: /scripts
+    schedule: { interval: weekly }
+    open-pull-requests-limit: 5

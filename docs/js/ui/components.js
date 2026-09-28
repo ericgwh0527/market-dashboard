@@ -17,11 +17,11 @@ export const infoBtn = (term) =>
 export const changeText = (n, d = 2) => `<span class="num ${dir(n)}">${arrow(n)}${pct(n, d)}</span>`;
 
 export const trendPill = (trend, compact = false) =>
-  `<span class="pill ${trend === "Uptrend" ? "good" : trend === "Downtrend" ? "bad" : ""}"${compact ? ' style="font-size:10.5px;padding:0 6px"' : ""}>${esc(trend)}</span>`;
+  `<span class="pill ${trend === "Uptrend" ? "good" : trend === "Downtrend" ? "bad" : ""}"${compact ? ' data-u="font-size-10-5px-padding-0-6px"' : ""}>${esc(trend)}</span>`;
 
 const SIGNAL_ICONS = {
   good: '<span class="up">▲</span>', bad: '<span class="down">▼</span>',
-  warn: '<span style="color:var(--warn)">!</span>', info: '<span style="color:var(--accent)">●</span>',
+  warn: '<span data-u="color-var-warn">!</span>', info: '<span data-u="color-var-accent">●</span>',
 };
 export const signalIcon = (type) => SIGNAL_ICONS[type] || "";
 export const SIGNAL_ORDER = { good: 0, bad: 1, warn: 2, info: 3 };
@@ -29,7 +29,7 @@ export const SIGNAL_ORDER = { good: 0, bad: 1, warn: 2, info: 3 };
 export function stockRow(s, key = "chg_1d") {
   return `<div class="row" data-sym="${esc(s.symbol)}" tabindex="0">
     <div><div class="r-name">${esc(s.name)}</div><div class="r-sub">${esc(s.symbol)} · ${esc(s.theme || s.group || "")}</div></div>
-    <div class="r-right num"><div class="r-price">${priceStr(s)}</div><div class="${dir(s[key])}" style="font-size:13px;font-weight:600">${arrow(s[key])}${pct(s[key])}</div></div>
+    <div class="r-right num"><div class="r-price">${priceStr(s)}</div><div class="${dir(s[key])}" data-u="font-size-13px-font-weight-600">${arrow(s[key])}${pct(s[key])}</div></div>
   </div>`;
 }
 
@@ -59,3 +59,15 @@ export const segmented = (id, options, active) =>
 export const empty = (text) => `<div class="empty">${esc(text)}</div>`;
 
 export const lockIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>`;
+
+/**
+ * Bars get their size from data-left / data-width (percent) and are sized here via
+ * the CSSOM. Inline data-u="" attributes are blocked by the Content-Security-Policy.
+ */
+export function applyGeometry(root) {
+  for (const el of root.querySelectorAll("[data-width]")) {
+    const w = Number(el.dataset.width), l = Number(el.dataset.left);
+    if (Number.isFinite(w)) el.style.width = `${Math.max(0, Math.min(100, w))}%`;
+    if (Number.isFinite(l)) el.style.left = `${Math.max(0, Math.min(100, l))}%`;
+  }
+}
