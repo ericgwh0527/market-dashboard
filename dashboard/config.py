@@ -33,7 +33,7 @@ class Settings:
     indices: list[Instrument]
     stocks: list[Instrument]
     news_queries: list[NewsQuery] = field(default_factory=list)
-    gemini_model: str = "gemini-2.5-flash"
+    gemini_model: str = "gemini-flash-latest"
 
     @property
     def all_instruments(self) -> list[Instrument]:
@@ -46,5 +46,5 @@ def load_settings(path: Path) -> Settings:
         indices=[Instrument(i["symbol"], i["name"], group=i.get("group")) for i in raw["indices"]],
         stocks=[Instrument(s["symbol"], s["name"], market=s["market"], theme=s.get("theme")) for s in raw["stocks"]],
         news_queries=[NewsQuery(q["label"], q["query"]) for q in raw.get("news_queries", [])],
-        gemini_model=raw.get("gemini_model", "gemini-2.5-flash"),
+        gemini_model=raw.get("gemini_model", "gemini-flash-latest"),
     )

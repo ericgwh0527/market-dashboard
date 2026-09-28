@@ -21,8 +21,12 @@ DATA (JSON):
 class GeminiSummarizer:
     name = "Gemini"
     ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
-    FALLBACK_MODELS = ("gemini-flash-latest", "gemini-2.5-flash", "gemini-2.0-flash")
-    MAX_REQUESTS = 4          # hard cap per run, so failures can't burn the free quota
+    LIST_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models?pageSize=200"
+    # Google retires model names over time (gemini-2.5-flash started returning 404), so the
+    # list of usable models is discovered from the API each run; these are only fallbacks.
+    FALLBACK_MODELS = ("gemini-flash-latest", "gemini-flash-lite-latest")
+    MAX_REQUESTS = 5          # hard cap on generate calls per run, so failures can't burn the free quota
+    RETRY_WAIT = 8            # seconds before retrying a model that said 503 (overloaded)
 
     # Gemini 2.5+ "thinks" before answering and those tokens count against
     # maxOutputTokens – with a small limit the brief got cut off mid-sentence.
@@ -39,6 +43,7 @@ class GeminiSummarizer:
             import requests
             http = requests
         self.key, self.model, self.http, self.max_chars = api_key, model, http, max_chars
+        self._sleep = __import__("time").sleep
         self.attempts: list[str] = []   # public-safe diagnostics, e.g. "gemini-2.5-flash: RESOURCE_EXHAUSTED"
         self.used_model: str | None = None
 
@@ -48,8 +53,8 @@ class GeminiSummarizer:
 
     def summarize(self, brief: dict) -> str | None:
         prompt = PROMPT.format(data=json.dumps(brief, ensure_ascii=False)[: self.max_chars])
-        self.attempts, self.used_model = [], None
-        for m in dict.fromkeys((self.model, *self.FALLBACK_MODELS)):
+        self.attempts, self.used_model, self._retried = [], None, False
+        for m in self.candidate_models():
             if len(self.attempts) >= self.MAX_REQUESTS:
                 break
             text = self._call(m, prompt)
@@ -57,6 +62,24 @@ class GeminiSummarizer:
                 self.used_model = m
                 return text
         return None
+
+    def candidate_models(self) -> list[str]:
+        """Configured model first, then the best flash models this key can use right now."""
+        available = self._list_models()
+        ordered = [self.model, *self.FALLBACK_MODELS, *rank_flash_models(available)]
+        if available:   # drop names the API says don't exist (saves quota on 404s)
+            ordered = [m for m in ordered if m in available or m.endswith("-latest")]
+        return list(dict.fromkeys(ordered))
+
+    def _list_models(self) -> set[str]:
+        try:
+            r = self.http.get(self.LIST_ENDPOINT, headers={"x-goog-api-key": self.key}, timeout=30)
+            if r.status_code != 200:
+                return set()
+            return {m["name"].split("/", 1)[-1] for m in r.json().get("models", [])
+                    if "generateContent" in m.get("supportedGenerationMethods", [])}
+        except Exception:
+            return set()
 
     def _call(self, model: str, prompt: str) -> str | None:
         for extra in self.GENERATION_VARIANTS:
@@ -76,6 +99,11 @@ class GeminiSummarizer:
             if r.status_code == 400 and extra:
                 self._note(model, "HTTP 400 with thinkingConfig – retrying without")
                 continue
+            if r.status_code == 503 and not getattr(self, "_retried", False):
+                self._note(model, "HTTP 503 (overloaded) – retrying once")
+                self._retried = True
+                self._sleep(self.RETRY_WAIT)
+                return self._call(model, prompt)
             if r.status_code != 200:
                 self._note(model, f"HTTP {r.status_code} {self._error_status(r)}".strip())
                 return None                                  # 429/404 etc.: move on to the next model
@@ -108,3 +136,19 @@ class GeminiSummarizer:
             return None
         self.attempts.append(f"{model}: ok")
         return text or None
+
+
+_EXCLUDE = ("lite", "image", "tts", "audio", "live", "embedding", "thinking", "learnlm", "vision")
+
+
+def rank_flash_models(names) -> list[str]:
+    """Pick text 'flash' models, newest version first, stable before preview/experimental."""
+    import re
+    def key(n):
+        v = re.search(r"gemini-(\d+(?:\.\d+)?)", n)
+        version = float(v.group(1)) if v else 0.0
+        unstable = any(t in n for t in ("preview", "exp"))
+        return (unstable, -version, n)
+    flash = [n for n in names if "flash" in n and not any(t in n for t in _EXCLUDE)
+             and not n.endswith("-latest")]
+    return sorted(flash, key=key)

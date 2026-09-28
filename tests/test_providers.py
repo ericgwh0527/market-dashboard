@@ -108,3 +108,33 @@ def test_gemini_caps_requests_and_records_safe_status():
     assert len(calls) <= GeminiSummarizer.MAX_REQUESTS
     assert g.status["ok"] is False and "RESOURCE_EXHAUSTED" in g.status["attempts"][0]
     assert "secret" not in str(g.status)
+
+
+def test_rank_flash_models_prefers_newest_stable():
+    from dashboard.providers.gemini import rank_flash_models
+    names = {"gemini-2.0-flash", "gemini-3-flash", "gemini-3.5-flash-preview-09-2026", "gemini-3-flash-lite",
+             "gemini-2.5-flash-image", "gemini-3-pro", "gemini-flash-latest"}
+    assert rank_flash_models(names) == ["gemini-3-flash", "gemini-2.0-flash", "gemini-3.5-flash-preview-09-2026"]
+
+
+def test_gemini_skips_retired_models_and_retries_503():
+    from dashboard.providers.gemini import GeminiSummarizer
+    posts = []
+
+    class Http:
+        def get(self, url, **kw):
+            return _Resp(200, {"models": [
+                {"name": "models/gemini-3-flash", "supportedGenerationMethods": ["generateContent"]},
+                {"name": "models/gemini-flash-latest", "supportedGenerationMethods": ["generateContent"]}]})
+
+        def post(self, url, **kw):
+            posts.append(url.split("/models/")[1].split(":")[0])
+            if len(posts) == 1:
+                return _Resp(503, {"error": {"status": "UNAVAILABLE"}})
+            return _ok("brief")
+
+    g = GeminiSummarizer("k", "gemini-2.5-flash", http=Http())   # configured model no longer exists
+    g._sleep = lambda s: None
+    assert g.summarize({}) == "brief"
+    assert "gemini-2.5-flash" not in posts                        # retired model not even tried
+    assert posts[:2] == ["gemini-flash-latest", "gemini-flash-latest"] and g.used_model == "gemini-flash-latest"

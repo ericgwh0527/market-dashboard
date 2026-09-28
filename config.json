@@ -45,5 +45,5 @@
     {"label": "Wall Street", "query": "Wall Street stocks today"},
     {"label": "AI & chips", "query": "AI chip stocks Nvidia"}
   ],
-  "gemini_model": "gemini-2.5-flash"
+  "gemini_model": "gemini-flash-latest"
 }
