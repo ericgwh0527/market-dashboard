@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-28T11:46:35+00:00",
+ "generated_at": "2026-09-28T13:14:00+00:00",
  "session": "after-bursa",
  "rows": [
   {
@@ -69,64 +69,64 @@
   {
    "symbol": "^VIX",
    "name": "VIX (fear index)",
-   "price": 16.27,
-   "chg_1d": 9.4149,
-   "chg_1m": 12.7512,
-   "rsi14": 52.6771,
+   "price": 16.0,
+   "chg_1d": 7.5992,
+   "chg_1m": 10.8801,
+   "rsi14": 51.573,
    "trend": "Mixed",
    "vol_ratio": null,
-   "from_hi_52w": -53.9093,
+   "from_hi_52w": -54.6742,
    "signals": []
   },
   {
    "symbol": "^TNX",
    "name": "US 10Y yield",
-   "price": 5.184,
-   "chg_1d": 0.4262,
-   "chg_1m": 11.1492,
-   "rsi14": 76.3369,
+   "price": 5.211,
+   "chg_1d": 0.5208,
+   "chg_1m": 11.5368,
+   "rsi14": 77.4787,
    "trend": "Uptrend",
    "vol_ratio": null,
-   "from_hi_52w": -0.8795,
+   "from_hi_52w": -0.3633,
    "signals": [
-    "RSI 76 – overbought (ran up fast)",
+    "RSI 77 – overbought (ran up fast)",
     "At / near 52-week high"
    ]
   },
   {
    "symbol": "GC=F",
    "name": "Gold",
-   "price": 4181.0,
-   "chg_1d": -3.2445,
-   "chg_1m": -10.3559,
-   "rsi14": 33.5944,
+   "price": 4180.1001,
+   "chg_1d": -3.2653,
+   "chg_1m": -10.3752,
+   "rsi14": 33.5482,
    "trend": "Downtrend",
-   "vol_ratio": 0.5685,
-   "from_hi_52w": -25.1548,
+   "vol_ratio": 0.6804,
+   "from_hi_52w": -25.171,
    "signals": []
   },
   {
    "symbol": "BZ=F",
    "name": "Brent oil",
-   "price": 100.41,
-   "chg_1d": -3.7481,
-   "chg_1m": 11.9398,
-   "rsi14": 51.8737,
+   "price": 99.09,
+   "chg_1d": -5.0134,
+   "chg_1m": 10.4682,
+   "rsi14": 49.9558,
    "trend": "Uptrend",
-   "vol_ratio": 0.4819,
-   "from_hi_52w": -20.3727,
+   "vol_ratio": 0.6084,
+   "from_hi_52w": -21.4195,
    "signals": []
   },
   {
    "symbol": "BTC-USD",
    "name": "Bitcoin",
-   "price": 83009.7734,
-   "chg_1d": -1.7148,
-   "chg_1m": 4.9218,
-   "rsi14": 58.9743,
+   "price": 83347.2109,
+   "chg_1d": -1.3153,
+   "chg_1m": 5.3483,
+   "rsi14": 60.2934,
    "trend": "Uptrend",
-   "vol_ratio": 1.0513,
-   "from_hi_52w": -10.5483,
+   "vol_ratio": 1.1053,
+   "from_hi_52w": -10.1847,
    "signals": []
   },
   {
@@ -436,15 +436,15 @@
   }
  ],
  "top_headlines": [
+  "Nvidia Stock Rises As AI Chipmaker Plans Huge Share Buyback",
+  "3 Beaten-Down Dividend Stocks Wall Street Abandoned That Still Pay You 7%",
+  "Jefferies Downgrades Roblox, Sees Bookings Growth Well Below Wall Street, Stock Falls",
+  "Why Did Metaplanet (TSE:3350) Move Today?",
   "Latest News In AI Chips - AI's Impact on Semiconductor Transformation and Material Demand",
+  "EVT to MYR: Convert Eventra Market to Malaysian Ringgit | Live EVT Price in MYR | MEXC",
   "Bursa Malaysia ends marginally lower amid lack of fresh catalysts",
-  "This Could Be Nvidia’s Biggest Challenger in the AI Chip Market. Hint: It’s Not AMD",
   "Bursa Ends Lower As Buying Interest Fades",
   "STI Index (^STI) charts, data and news",
-  "Bursa Malaysia ends lower as selling pressure hits over 700 counters",
-  "Chinese stocks hit 1-year low after news report on Beijing allowing purchase of Nvidia’s AI chips",
-  "Why Are Nvidia and AI Stocks in Focus Today? OpenAI Pause Hits Asian Chip Shares",
-  "US Stock Market Today: S&P 500 Futures Rise As Traders Eye Jobs And PCE Data",
-  "3 of Wall Street’s Favorite Stocks to Keep an Eye On"
+  "This Could Be Nvidia’s Biggest Challenger in the AI Chip Market. Hint: It’s Not AMD"
  ]
 }
