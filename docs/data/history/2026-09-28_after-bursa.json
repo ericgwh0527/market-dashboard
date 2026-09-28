@@ -1,17 +1,17 @@
 {
- "generated_at": "2026-09-28T08:37:23+00:00",
+ "generated_at": "2026-09-28T08:50:58+00:00",
  "session": "after-bursa",
  "rows": [
   {
    "symbol": "^KLSE",
    "name": "FBM KLCI",
-   "price": 1671.04,
-   "chg_1d": -0.0347,
-   "chg_1m": -4.4323,
-   "rsi14": 36.7864,
+   "price": 1671.9,
+   "chg_1d": 0.0168,
+   "chg_1m": -4.3831,
+   "rsi14": 37.1801,
    "trend": "Mixed",
    "vol_ratio": 0.0,
-   "from_hi_52w": -5.6576,
+   "from_hi_52w": -5.609,
    "signals": []
   },
   {
@@ -96,49 +96,49 @@
   {
    "symbol": "GC=F",
    "name": "Gold",
-   "price": 4181.5,
-   "chg_1d": -3.2329,
-   "chg_1m": -10.3452,
-   "rsi14": 33.6202,
+   "price": 4179.1001,
+   "chg_1d": -3.2884,
+   "chg_1m": -10.3967,
+   "rsi14": 33.4969,
    "trend": "Downtrend",
-   "vol_ratio": 0.4372,
-   "from_hi_52w": -25.1459,
+   "vol_ratio": 0.454,
+   "from_hi_52w": -25.1889,
    "signals": []
   },
   {
    "symbol": "BZ=F",
    "name": "Brent oil",
-   "price": 99.95,
-   "chg_1d": -4.189,
-   "chg_1m": 11.427,
-   "rsi14": 51.1889,
+   "price": 100.03,
+   "chg_1d": -4.1123,
+   "chg_1m": 11.5162,
+   "rsi14": 51.3067,
    "trend": "Uptrend",
-   "vol_ratio": 0.2652,
-   "from_hi_52w": -20.7375,
+   "vol_ratio": 0.289,
+   "from_hi_52w": -20.6741,
    "signals": []
   },
   {
    "symbol": "BTC-USD",
    "name": "Bitcoin",
-   "price": 82854.9922,
-   "chg_1d": -1.8981,
-   "chg_1m": 4.7262,
-   "rsi14": 58.3884,
+   "price": 82879.8906,
+   "chg_1d": -1.8686,
+   "chg_1m": 4.7576,
+   "rsi14": 58.4818,
    "trend": "Uptrend",
-   "vol_ratio": 0.9866,
-   "from_hi_52w": -10.7151,
+   "vol_ratio": 0.9944,
+   "from_hi_52w": -10.6883,
    "signals": []
   },
   {
    "symbol": "1155.KL",
    "name": "Maybank",
-   "price": 10.2,
-   "chg_1d": -0.1957,
-   "chg_1m": -3.9548,
-   "rsi14": 35.7737,
+   "price": 10.18,
+   "chg_1d": -0.3914,
+   "chg_1m": -4.1431,
+   "rsi14": 35.0015,
    "trend": "Downtrend",
-   "vol_ratio": 0.3049,
-   "from_hi_52w": -17.8744,
+   "vol_ratio": 0.3151,
+   "from_hi_52w": -18.0354,
    "signals": []
   },
   {
@@ -149,7 +149,7 @@
    "chg_1m": -4.0,
    "rsi14": 36.3757,
    "trend": "Mixed",
-   "vol_ratio": 0.5291,
+   "vol_ratio": 0.6184,
    "from_hi_52w": -9.2628,
    "signals": [
     "MACD turned bullish (momentum improving)"
@@ -158,13 +158,13 @@
   {
    "symbol": "1023.KL",
    "name": "CIMB",
-   "price": 7.95,
-   "chg_1d": 0.6329,
-   "chg_1m": -1.487,
-   "rsi14": 53.7753,
+   "price": 7.96,
+   "chg_1d": 0.7595,
+   "chg_1m": -1.3631,
+   "rsi14": 54.239,
    "trend": "Mixed",
-   "vol_ratio": 0.2197,
-   "from_hi_52w": -11.1732,
+   "vol_ratio": 0.2338,
+   "from_hi_52w": -11.0615,
    "signals": []
   },
   {
@@ -175,7 +175,7 @@
    "chg_1m": -7.8322,
    "rsi14": 32.2508,
    "trend": "Downtrend",
-   "vol_ratio": 0.5025,
+   "vol_ratio": 0.5164,
    "from_hi_52w": -11.5436,
    "signals": [
     "Death cross – 50-day avg crossed below 200-day"
@@ -189,7 +189,7 @@
    "chg_1m": -0.5146,
    "rsi14": 58.974,
    "trend": "Uptrend",
-   "vol_ratio": 0.5053,
+   "vol_ratio": 0.5146,
    "from_hi_52w": -3.6545,
    "signals": []
   },
@@ -201,7 +201,7 @@
    "chg_1m": 8.4071,
    "rsi14": 65.0678,
    "trend": "Uptrend",
-   "vol_ratio": 0.5471,
+   "vol_ratio": 0.5758,
    "from_hi_52w": -13.5802,
    "signals": [
     "Golden cross – 50-day avg crossed above 200-day",
@@ -211,13 +211,13 @@
   {
    "symbol": "5263.KL",
    "name": "Sunway Construction",
-   "price": 7.82,
-   "chg_1d": 0.6435,
-   "chg_1m": -4.7503,
-   "rsi14": 52.4447,
+   "price": 7.83,
+   "chg_1d": 0.7722,
+   "chg_1m": -4.6285,
+   "rsi14": 52.6583,
    "trend": "Mixed",
-   "vol_ratio": 0.235,
-   "from_hi_52w": -6.9048,
+   "vol_ratio": 0.2435,
+   "from_hi_52w": -6.7857,
    "signals": [
     "MACD turned bullish (momentum improving)"
    ]
@@ -225,53 +225,51 @@
   {
    "symbol": "0166.KL",
    "name": "Inari Amertron",
-   "price": 2.56,
-   "chg_1d": -3.7594,
-   "chg_1m": 2.4,
-   "rsi14": 50.0828,
+   "price": 2.55,
+   "chg_1d": -4.1353,
+   "chg_1m": 2.0,
+   "rsi14": 49.3869,
    "trend": "Uptrend",
-   "vol_ratio": 2.5103,
-   "from_hi_52w": -6.5693,
+   "vol_ratio": 2.6132,
+   "from_hi_52w": -6.9343,
    "signals": [
-    "Volume 2.5× the 20-day average"
+    "Volume 2.6× the 20-day average"
    ]
   },
   {
    "symbol": "0128.KL",
    "name": "Frontken",
-   "price": 4.96,
-   "chg_1d": -1.7822,
-   "chg_1m": -2.7451,
-   "rsi14": 48.3634,
+   "price": 4.97,
+   "chg_1d": -1.5842,
+   "chg_1m": -2.549,
+   "rsi14": 48.8622,
    "trend": "Mixed",
-   "vol_ratio": 0.519,
-   "from_hi_52w": -8.1481,
+   "vol_ratio": 0.5851,
+   "from_hi_52w": -7.963,
    "signals": []
   },
   {
    "symbol": "3816.KL",
    "name": "MISC",
-   "price": 7.78,
-   "chg_1d": -0.8917,
-   "chg_1m": -8.2547,
-   "rsi14": 42.9318,
+   "price": 7.83,
+   "chg_1d": -0.2548,
+   "chg_1m": -7.6651,
+   "rsi14": 44.7538,
    "trend": "Downtrend",
-   "vol_ratio": 0.3648,
-   "from_hi_52w": -13.9381,
-   "signals": [
-    "MACD turned bearish (momentum fading)"
-   ]
+   "vol_ratio": 0.4324,
+   "from_hi_52w": -13.385,
+   "signals": []
   },
   {
    "symbol": "8869.KL",
    "name": "Press Metal",
-   "price": 7.49,
-   "chg_1d": 0.4021,
-   "chg_1m": -6.4919,
-   "rsi14": 38.2181,
+   "price": 7.5,
+   "chg_1d": 0.5362,
+   "chg_1m": -6.367,
+   "rsi14": 38.7514,
    "trend": "Downtrend",
-   "vol_ratio": 1.0734,
-   "from_hi_52w": -20.1493,
+   "vol_ratio": 1.1753,
+   "from_hi_52w": -20.0426,
    "signals": [
     "Death cross – 50-day avg crossed below 200-day"
    ]
@@ -279,13 +277,13 @@
   {
    "symbol": "5225.KL",
    "name": "IHH Healthcare",
-   "price": 8.0,
-   "chg_1d": -0.3736,
-   "chg_1m": -1.8405,
-   "rsi14": 50.6233,
+   "price": 8.01,
+   "chg_1d": -0.2491,
+   "chg_1m": -1.7178,
+   "rsi14": 51.1184,
    "trend": "Downtrend",
-   "vol_ratio": 0.6723,
-   "from_hi_52w": -23.6641,
+   "vol_ratio": 0.6976,
+   "from_hi_52w": -23.5687,
    "signals": []
   },
   {
@@ -447,6 +445,6 @@
   "Stock Market: Will S&P 500 Open Up or Down Today?",
   "China may let Alibaba buy Nvidia’s RTX chips, Information reports",
   "Stocks with momentum on Sept 28, 2026: Verdant Solar, Inta Bina, Infomina, HPMT, CJ Century Logistics",
-  "Stock Today: Maybank Holds Steady In Late Morning Trade"
+  "Seagate (STX) Stock Could Be Cheap Even After A Huge Run"
  ]
 }
