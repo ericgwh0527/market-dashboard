@@ -1,0 +1,13 @@
+{
+  "_help": "Copy this into the PRIVATE repo as holdings.json. Never commit real holdings to the public repo.",
+  "base_currency": "MYR",
+  "updated": "2026-09-28",
+  "positions": [
+    {"symbol": "1155.KL", "name": "Maybank", "shares": 500, "avg_cost": 9.80, "currency": "MYR"},
+    {"symbol": "NVDA", "name": "Nvidia", "shares": 5, "avg_cost": 120.00, "currency": "USD", "note": "bought on dip"}
+  ],
+  "cash": [
+    {"currency": "MYR", "amount": 1000},
+    {"currency": "USD", "amount": 150}
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "_help": "Edit this file to change what the dashboard tracks. Yahoo Finance symbols: Bursa stocks end in .KL (e.g. 1155.KL = Maybank). After saving, the next scheduled run (or a manual run in the Actions tab) picks up the change.",
+  "indices": [
+    {"symbol": "^KLSE",   "name": "FBM KLCI",        "group": "Malaysia"},
+    {"symbol": "MYR=X",   "name": "USD / MYR",       "group": "Malaysia"},
+    {"symbol": "^GSPC",   "name": "S&P 500",         "group": "US"},
+    {"symbol": "^IXIC",   "name": "Nasdaq",          "group": "US"},
+    {"symbol": "^DJI",    "name": "Dow Jones",       "group": "US"},
+    {"symbol": "^VIX",    "name": "VIX (fear index)","group": "US"},
+    {"symbol": "^TNX",    "name": "US 10Y yield",    "group": "Macro"},
+    {"symbol": "GC=F",    "name": "Gold",            "group": "Macro"},
+    {"symbol": "BZ=F",    "name": "Brent oil",       "group": "Macro"},
+    {"symbol": "BTC-USD", "name": "Bitcoin",         "group": "Macro"}
+  ],
+  "stocks": [
+    {"symbol": "1155.KL", "name": "Maybank",             "market": "MY", "theme": "Banks"},
+    {"symbol": "1295.KL", "name": "Public Bank",         "market": "MY", "theme": "Banks"},
+    {"symbol": "1023.KL", "name": "CIMB",                "market": "MY", "theme": "Banks"},
+    {"symbol": "5347.KL", "name": "Tenaga Nasional",     "market": "MY", "theme": "Utilities / Data centre"},
+    {"symbol": "6742.KL", "name": "YTL Power",           "market": "MY", "theme": "Utilities / Data centre"},
+    {"symbol": "5398.KL", "name": "Gamuda",              "market": "MY", "theme": "Construction / Data centre"},
+    {"symbol": "5263.KL", "name": "Sunway Construction", "market": "MY", "theme": "Construction / Data centre"},
+    {"symbol": "0166.KL", "name": "Inari Amertron",      "market": "MY", "theme": "Tech / Semiconductors"},
+    {"symbol": "0128.KL", "name": "Frontken",            "market": "MY", "theme": "Tech / Semiconductors"},
+    {"symbol": "3816.KL", "name": "MISC",                "market": "MY", "theme": "Shipping / Energy"},
+    {"symbol": "8869.KL", "name": "Press Metal",          "market": "MY", "theme": "Materials"},
+    {"symbol": "5225.KL", "name": "IHH Healthcare",      "market": "MY", "theme": "Healthcare"},
+
+    {"symbol": "NVDA",  "name": "Nvidia",     "market": "US", "theme": "AI chips"},
+    {"symbol": "AVGO",  "name": "Broadcom",   "market": "US", "theme": "AI chips"},
+    {"symbol": "AMD",   "name": "AMD",        "market": "US", "theme": "AI chips"},
+    {"symbol": "TSM",   "name": "TSMC (ADR)", "market": "US", "theme": "AI chips"},
+    {"symbol": "MSFT",  "name": "Microsoft",  "market": "US", "theme": "Big Tech"},
+    {"symbol": "AAPL",  "name": "Apple",      "market": "US", "theme": "Big Tech"},
+    {"symbol": "GOOGL", "name": "Alphabet",   "market": "US", "theme": "Big Tech"},
+    {"symbol": "AMZN",  "name": "Amazon",     "market": "US", "theme": "Big Tech"},
+    {"symbol": "META",  "name": "Meta",       "market": "US", "theme": "Big Tech"},
+    {"symbol": "TSLA",  "name": "Tesla",      "market": "US", "theme": "EV / Growth"},
+    {"symbol": "PLTR",  "name": "Palantir",   "market": "US", "theme": "Software"},
+    {"symbol": "NFLX",  "name": "Netflix",    "market": "US", "theme": "Software"}
+  ],
+  "news_queries": [
+    {"label": "Bursa Malaysia", "query": "Bursa Malaysia stocks"},
+    {"label": "Malaysia economy", "query": "Malaysia ringgit economy"},
+    {"label": "Wall Street", "query": "Wall Street stocks today"},
+    {"label": "AI & chips", "query": "AI chip stocks Nvidia"}
+  ],
+  "gemini_model": "gemini-2.5-flash"
+}
