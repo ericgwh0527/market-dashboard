@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-28T09:35:12+00:00",
+ "generated_at": "2026-09-28T11:11:04+00:00",
  "session": "after-bursa",
  "rows": [
   {
@@ -17,13 +17,13 @@
   {
    "symbol": "MYR=X",
    "name": "USD / MYR",
-   "price": 4.081,
-   "chg_1d": -0.0441,
-   "chg_1m": 1.258,
-   "rsi14": 57.4606,
+   "price": 4.0805,
+   "chg_1d": -0.0563,
+   "chg_1m": 1.2456,
+   "rsi14": 57.215,
    "trend": "Uptrend",
    "vol_ratio": null,
-   "from_hi_52w": -3.5225,
+   "from_hi_52w": -3.5343,
    "signals": []
   },
   {
@@ -69,13 +69,13 @@
   {
    "symbol": "^VIX",
    "name": "VIX (fear index)",
-   "price": 16.32,
-   "chg_1d": 9.7512,
-   "chg_1m": 13.0977,
-   "rsi14": 52.8761,
+   "price": 16.34,
+   "chg_1d": 9.8857,
+   "chg_1m": 13.2363,
+   "rsi14": 52.9552,
    "trend": "Mixed",
    "vol_ratio": null,
-   "from_hi_52w": -53.7677,
+   "from_hi_52w": -53.711,
    "signals": []
   },
   {
@@ -96,37 +96,37 @@
   {
    "symbol": "GC=F",
    "name": "Gold",
-   "price": 4179.5,
-   "chg_1d": -3.2792,
-   "chg_1m": -10.3881,
-   "rsi14": 33.5174,
+   "price": 4187.6001,
+   "chg_1d": -3.0917,
+   "chg_1m": -10.2144,
+   "rsi14": 33.9377,
    "trend": "Downtrend",
-   "vol_ratio": 0.4885,
-   "from_hi_52w": -25.1817,
+   "vol_ratio": 0.5459,
+   "from_hi_52w": -25.0367,
    "signals": []
   },
   {
    "symbol": "BZ=F",
    "name": "Brent oil",
-   "price": 100.65,
-   "chg_1d": -3.518,
-   "chg_1m": 12.2074,
-   "rsi14": 52.2383,
+   "price": 101.02,
+   "chg_1d": -3.1633,
+   "chg_1m": 12.6198,
+   "rsi14": 52.8106,
    "trend": "Uptrend",
-   "vol_ratio": 0.3301,
-   "from_hi_52w": -20.1824,
+   "vol_ratio": 0.4282,
+   "from_hi_52w": -19.889,
    "signals": []
   },
   {
    "symbol": "BTC-USD",
    "name": "Bitcoin",
-   "price": 82683.9688,
-   "chg_1d": -2.1006,
-   "chg_1m": 4.51,
-   "rsi14": 57.7543,
+   "price": 82962.0469,
+   "chg_1d": -1.7713,
+   "chg_1m": 4.8615,
+   "rsi14": 58.7924,
    "trend": "Uptrend",
-   "vol_ratio": 1.02,
-   "from_hi_52w": -10.8994,
+   "vol_ratio": 1.0287,
+   "from_hi_52w": -10.5997,
    "signals": []
   },
   {
@@ -436,15 +436,15 @@
   }
  ],
  "top_headlines": [
+  "Bursa Malaysia ends marginally lower amid lack of fresh catalysts",
+  "Bursa Malaysia ends lower as selling pressure hits over 700 counters",
+  "Bursa Ends Lower As Buying Interest Fades",
+  "This Could Be Nvidia’s Biggest Challenger in the AI Chip Market. Hint: It’s Not AMD",
+  "Chinese stocks hit 1-year low after news report on Beijing allowing purchase of Nvidia’s AI chips",
   "Why Are Nvidia and AI Stocks in Focus Today? OpenAI Pause Hits Asian Chip Shares",
   "3 of Wall Street’s Favorite Stocks with Questionable Fundamentals",
-  "Higher dividends offer some relief in a volatile market",
-  "Chinese Chip, Optical Stocks Slide as CSI 300 Touches One-Year Low",
-  "Oiltek applies for secondary listing on Bursa Malaysia Main Market",
-  "Stock Market: Will S&P 500 Open Up or Down Today?",
-  "China chipmaking stocks tumble as Beijing reportedly mulls allowing Nvidia sales",
-  "Bursa Malaysia flat at midday amid cautious trading, mild selling",
-  "Seagate (STX) Stock Could Be Cheap Even After A Huge Run",
-  "Chinese Stocks Hit One-Year Low as Chip, Optical Firms Slide"
+  "US Stock Market Today: S&P 500 Futures Rise As Traders Eye Jobs And PCE Data",
+  "3 of Wall Street’s Favorite Stocks to Keep an Eye On",
+  "Ringgit Navigates Geopolitical Crosscurrents Mixed Opening Reflects Dollar Haven Demand and Regional Resilience"
  ]
 }
