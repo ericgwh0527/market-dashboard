@@ -40,7 +40,8 @@ class GeminiSummarizer:
     def _call(self, model: str, prompt: str) -> str | None:
         try:
             r = self.http.post(
-                self.ENDPOINT.format(model=model), params={"key": self.key},
+                self.ENDPOINT.format(model=model),
+                headers={"x-goog-api-key": self.key},   # works for both AIza… and newer AQ.… keys; keeps the key out of URLs
                 json={"contents": [{"parts": [{"text": prompt}]}],
                       "generationConfig": {"temperature": 0.4, "maxOutputTokens": 1200}},
                 timeout=90,

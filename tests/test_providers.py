@@ -36,3 +36,22 @@ def test_silenced_swallows_output(capsys):
     with silenced():
         print("SECRET-TICKER")
     assert "SECRET" not in capsys.readouterr().out
+
+
+def test_gemini_sends_key_in_header_not_url():
+    from dashboard.providers.gemini import GeminiSummarizer
+    calls = []
+
+    class Resp:
+        status_code = 200
+        def json(self):
+            return {"candidates": [{"content": {"parts": [{"text": "brief"}]}}]}
+
+    class Http:
+        def post(self, url, **kw):
+            calls.append((url, kw))
+            return Resp()
+
+    out = GeminiSummarizer("AQ.Ab-test", "gemini-2.5-flash", http=Http()).summarize({"x": 1})
+    url, kw = calls[0]
+    assert out == "brief" and "AQ." not in url and kw["headers"]["x-goog-api-key"] == "AQ.Ab-test" and "params" not in kw
