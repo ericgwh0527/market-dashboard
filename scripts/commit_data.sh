@@ -22,9 +22,15 @@ git -c user.name="market-data-bot" -c user.email="41898282+github-actions[bot]@u
 
 # The token is passed per command (not stored in .git/config).
 auth="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+# If another run committed data in the meantime, both touched the same generated
+# JSON files. Our files are the freshest, so on conflict keep ours
+# (during a rebase, "theirs" = the commit being replayed = this run's data).
 for attempt in 1 2 3; do
-  git -c http.https://github.com/.extraheader="$auth" pull -q --rebase --autostash && \
-  git -c http.https://github.com/.extraheader="$auth" push -q && exit 0
+  if git -c http.https://github.com/.extraheader="$auth" pull -q --rebase -X theirs --autostash; then
+    git -c http.https://github.com/.extraheader="$auth" push -q && exit 0
+  else
+    git rebase --abort 2>/dev/null || true
+  fi
   sleep $((attempt * 5))
 done
 echo "Push failed"; exit 1
