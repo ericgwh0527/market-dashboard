@@ -1,5 +1,5 @@
 yfinance>=0.2.54
-pandas>=2.1
+pandas>=3.0.6
 numpy>=1.26
 feedparser>=6.0
 requests>=2.31
