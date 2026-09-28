@@ -1,132 +1,143 @@
-# Market Dashboard · Bursa Malaysia + US
+# Market Dashboard: Bursa Malaysia + US
 
-A free, serverless market dashboard for Bursa Malaysia and US stocks. It shows trends, technical signals, news, an optional AI daily brief, and an **end-to-end encrypted personal portfolio** inside a **public** repo.
+A serverless market dashboard that tracks Bursa Malaysia and US stocks. It shows trends, technical signals, news and a daily AI-written brief, plus a personal portfolio view that is **end-to-end encrypted even though the repository is public**.
 
-**Live:** `https://<username>.github.io/market-dashboard/` · works on phone (add to home screen) and desktop.
+It runs entirely on free infrastructure: GitHub Actions fetches and analyses the data on a schedule, and GitHub Pages serves a static, installable web app that works on phone and desktop.
 
-## What it does
+**▶ Live demo: [ericgwh0527.github.io/market-dashboard](https://ericgwh0527.github.io/market-dashboard/)**
 
-| Tab | What you get |
+<p align="center">
+  <img src="assets/overview-desktop.png" alt="Overview on desktop: AI market brief and index tiles" width="100%">
+</p>
+<p align="center">
+  <img src="assets/watchlist-mobile.png" alt="Watchlist on mobile" width="24%">
+  <img src="assets/detail-mobile.png" alt="Stock detail with price, moving averages and RSI" width="24%">
+  <img src="assets/signals-mobile.png" alt="Rules-based screens and signals" width="24%">
+  <img src="assets/portfolio-mobile.png" alt="Encrypted portfolio view (demo data)" width="24%">
+</p>
+<p align="center"><sub>The portfolio screenshot uses demo data. The live portfolio tab is locked.</sub></p>
+
+## Features
+
+| Tab | What it shows |
 |---|---|
-| **Overview** | KLCI, USD/MYR, S&P 500, Nasdaq, VIX, gold, oil and BTC tiles with sparklines; top movers; sector/theme heat; headlines; optional AI brief (Gemini) |
-| **Watchlist** | 24 stocks (Bursa + US), filtered and sorted by return, RSI or distance from the 52-week high. Tap one for price/candle charts with 50-/200-day averages, RSI, fundamentals, signals and news |
-| **Signals** | Rules-based screens (uptrend, near 52-week high, oversold, overbought, unusual volume, value) plus a plain-English glossary |
-| **News** | Google News + Yahoo Finance headlines by topic and per stock |
-| **Portfolio** | Your holdings with P/L, day change, allocation and value history, **decrypted in your browser** |
+| **Overview** | AI daily brief (Gemini). Tiles for KLCI, USD/MYR, S&P 500, Nasdaq, Dow, VIX, US 10Y, gold, oil and BTC with sparklines. Top movers, theme/sector heat and headlines |
+| **Watchlist** | 24 Bursa and US stocks, filterable and sortable by return, RSI or distance from the 52-week high. Each stock opens a detail sheet: line/candle chart with 50/200-day averages, RSI panel, performance, technicals, valuation, signals and news |
+| **Signals** | Transparent, rules-based screens (uptrend, near 52-week high, oversold/overbought, unusual volume, value) and a plain-English glossary. Every metric has an ⓘ explainer |
+| **News** | Google News and Yahoo Finance headlines by topic and per stock |
+| **Portfolio** | Holdings with P/L, day change, allocation and value history. Stored encrypted and **decrypted only in the browser** |
+
+Other details: responsive layout (bottom tab bar on mobile), light/dark theme, installable as a PWA, data refreshed after the Bursa close (17:35 MYT) and the US close (05:40 MYT).
 
 ## Architecture
 
 ```mermaid
 flowchart LR
-  subgraph GH["GitHub Actions (cron, weekdays 17:35 & 05:40 MYT)"]
-    F[MarketPipeline<br/>yfinance · RSS · Gemini] --> J[(docs/data/*.json)]
-    P[PortfolioService<br/>AES-256-GCM] --> E[(portfolio.enc.json)]
+  subgraph GH["GitHub Actions (weekdays, after each market closes)"]
+    F["MarketPipeline<br/>prices · indicators · news · AI brief"] --> J[("docs/data/*.json")]
+    P["PortfolioService<br/>value → encrypt"] --> E[("portfolio.enc.json")]
   end
-  PR[(Private repo<br/>holdings.json)] -- read-only token --> P
-  J --> Pages[GitHub Pages<br/>static site]
+  Y["Yahoo Finance<br/>Google News RSS<br/>Gemini API"] --> F
+  PR[("Private repo<br/>holdings.json")] -- "read-only token" --> P
+  J --> Pages["GitHub Pages<br/>static site"]
   E --> Pages
-  Pages --> B[Browser<br/>Web Crypto decrypt]
-  J -. raw JSON .-> C[Claude<br/>Q&A / insights]
-  PR -. private access .-> C
+  Pages --> B["Browser<br/>renders charts · decrypts with Web Crypto"]
 ```
 
-- **No server, no database, no cost.** Actions runs the Python job on a schedule and commits JSON. Pages serves the static front end (vanilla JS, [lightweight-charts](https://github.com/tradingview/lightweight-charts)).
-- `docs/data/history/` keeps a compact snapshot per session, so trends over time can be analysed later.
+- **No server, no database, no running costs.** A scheduled Python job commits JSON, and a vanilla-JS front end (no build step) reads it.
+- **History is kept:** each run also saves a compact snapshot (`docs/data/history/`) so trends can be analysed over time.
 
-## Security model (public repo, private holdings)
+## Security design
 
-**Holdings privacy**
-1. Real holdings live only in a **private** repo (`market-dashboard-private/holdings.json`).
-2. The workflow reads it with a **fine-grained, read-only token** (`PRIVATE_REPO_TOKEN`, scoped to that one repo). The checkout is deleted before the commit step, and the commit step refuses to stage anything outside `docs/data/` or any file named like `holdings`.
-3. `build_portfolio.py` values positions **in memory**. It writes no per-holding files, silences all library output and prints only exception *types*, because Actions logs of a public repo are public.
-4. The result is encrypted with **AES-256-GCM**, using a key derived from `HOLDINGS_PASSPHRASE` via **PBKDF2-SHA256 (600k iterations)**, with a fresh IV every run. The plaintext is **padded to 8 KB blocks**, so the file size doesn't reveal how many positions you hold.
-5. The browser decrypts locally with Web Crypto. "Keep unlocked" stores only a **non-extractable `CryptoKey`** in IndexedDB, never the passphrase, and it **expires after 30 days**.
+The interesting constraint: *a public repo and a public website, but private holdings.*
 
-**Website hardening**
-- A strict **Content-Security-Policy** allows only this site's own scripts, styles, data and images, with no third-party requests (Google Fonts removed) and `connect-src 'self'`, so injected content couldn't send data elsewhere.
-- Untrusted text (news titles, AI brief, Yahoo fields) is HTML-escaped. News links must be `http(s)`, and the AI brief goes through a tiny Markdown renderer that **cannot produce links, images or HTML**, which defends against prompt-injected `javascript:` links.
-- Frame protection (the page refuses to run inside another site's iframe) and `no-referrer`.
+**Keeping the holdings private**
+- Holdings live only in a separate **private** repo. The workflow reads them with a fine-grained, **read-only** token scoped to that one repo, then deletes the checkout. The commit step refuses to stage anything outside `docs/data/`.
+- Positions are valued **in memory**. No per-holding files are written, and library output is silenced because **Actions logs of a public repo are public**. Errors print only exception types.
+- The result is encrypted with **AES-256-GCM**, with the key derived via **PBKDF2-SHA256 (600k iterations)** and a fresh IV on every run. The plaintext is **padded to 8 KB blocks**, so the file size doesn't reveal the number of positions.
+- The browser decrypts with the **Web Crypto API**. The optional "keep unlocked" stores only a **non-extractable `CryptoKey`** in IndexedDB, never the passphrase, and it expires after 30 days.
 
-**Pipeline / supply chain**
-- Workflow token is read-only by default. Only the data job gets `contents: write`, and the token is **not persisted** in `.git/config`, so third-party Python code can't read it.
-- GitHub Actions are pinned to **commit SHAs**. Python dependencies are pinned to exact versions **with hashes** (`scripts/requirements.lock`, installed with `--require-hashes`).
-- Each secret is exposed only to the step that needs it. The Gemini key goes in a request header, never in a URL or log.
-- CI fails if a `holdings.json` or anything shaped like an API key or token is committed.
+**Hardening the website**
+- A strict **Content-Security-Policy**: only first-party scripts, styles, data and images, and no third-party requests.
+- All external text (news titles, AI output, market data fields) is escaped. Links must be `http(s)`. The AI brief is rendered by a minimal Markdown renderer that **cannot emit links, images or HTML**, which blocks prompt-injected `javascript:` links from news headlines.
+- Clickjacking protection (the page won't run inside a frame) and `no-referrer`.
 
-**Residual risks (by design, know them)**
-- The encrypted file is public, so it can be attacked **offline**. Its safety equals your passphrase: use 5+ random words and never reuse it.
-- All `<username>.github.io/*` sites share one browser origin. Another Pages site of yours with untrusted scripts could use a remembered key. Only tick "keep unlocked" on your own devices, or use a custom domain.
-- Anyone with access to your GitHub account controls everything. Turn on **2FA**, and give the fine-grained token an expiry.
-- The watchlist, the data timestamps and the fact that a portfolio exists are public.
-- The AI brief is generated from public headlines and can be wrong or manipulated. It's for learning, not advice.
+**Hardening the pipeline (supply chain)**
+- Read-only default `GITHUB_TOKEN`. Write access exists only for the data job and is **not persisted** into `.git/config`, so third-party Python code can't read it.
+- Actions are **pinned to commit SHAs**. Python dependencies are pinned **with hashes** (`pip install --require-hashes`).
+- Each secret is scoped to the single step that needs it. The Gemini key travels in a header, never in a URL or log.
+- CI fails if a holdings file or anything shaped like an API key or token is ever committed.
 
-To update pinned Python deps: `uv pip compile scripts/requirements.txt --python-version 3.12 --python-platform x86_64-manylinux_2_28 --generate-hashes -o scripts/requirements.lock` (same for `requirements-dev`).
+**Known limitations** (accepted trade-offs)
+- The encrypted file is public, so it can be attacked offline. Its strength rests on a long, random passphrase.
+- All `*.github.io` project pages of one account share a browser origin, so the "keep unlocked" option is meant for personal devices.
+- The watchlist and update times are public by design.
 
-## Setup
+## Code design
 
-1. Fork or push this repo (it must be public for free Pages).
-2. **Settings → Pages → Build and deployment:** *Deploy from a branch*, `main`, `/docs`.
-3. **Actions → Update market data → Run workflow** fills in the first data.
-4. *(Optional)* **AI brief:** get a free key at <https://aistudio.google.com/apikey> and add a repo secret named `GEMINI_API_KEY`.
-
-### Portfolio setup (optional)
-
-1. Create a **private** repo `market-dashboard-private` containing `holdings.json` (see `holdings.example.json`).
-2. Create a **fine-grained personal access token**: *Only select repositories →* `market-dashboard-private`, *Repository permissions → Contents: Read-only*.
-3. In this repo, go to **Settings → Secrets and variables → Actions** and add:
-   - `PRIVATE_REPO_TOKEN`: the token
-   - `HOLDINGS_PASSPHRASE`: a long passphrase (4+ random words)
-4. Run the workflow, open the **Portfolio** tab and unlock it.
-
-## Code structure
-
-The code follows SOLID principles, so new data sources, signals, screens or tabs slot in without editing existing code.
+Both halves follow **SOLID** principles. New data sources, signals, screens or UI tabs are added as new classes, without editing existing ones.
 
 ```
 dashboard/                    Python package: all logic, no entry points
-  config.py                   config.json -> typed Settings
-  analysis/                   pure functions, no I/O (easy to unit-test)
+  config.py                   config.json → typed Settings
+  analysis/                   pure functions, no I/O
     indicators.py             SMA, RSI, MACD
     signals.py                SignalRule classes + DEFAULT_RULES registry
     screens.py                Screen objects + DEFAULT_SCREENS registry
     metrics.py, themes.py     per-symbol metrics, theme aggregation
-  providers/                  adapters to the outside world
+  providers/                  adapters to external services
     base.py                   Protocols: PriceProvider, FundamentalsProvider, NewsProvider, Summarizer
     yahoo.py, google_news.py, gemini.py
-  news.py, storage.py         news aggregation; the only module that knows docs/data paths
-  pipeline.py                 MarketPipeline – orchestrates injected providers
+  news.py, storage.py         news aggregation; the only module that knows file paths
+  pipeline.py                 MarketPipeline – orchestrates injected dependencies
   portfolio/                  crypto.py (Cipher), valuation.py (pure maths), service.py
-scripts/                      composition roots: pick concrete classes, wire, run
-tests/                        pytest suite using fakes for every provider
-docs/                         static site (GitHub Pages)
-  js/main.js                  composition root: services + tabs + global events
-  js/core/ data/ ui/          formatting, theme, data access, Web Crypto, charts, detail sheet
-  js/views/                   one class per tab, all extending View; registry in views/index.js
+scripts/                      composition roots: choose concrete classes, wire, run
+tests/                        pytest suite with fakes for every provider
+docs/                         the static site (GitHub Pages)
+  js/main.js                  composition root: services, tabs, global events
+  js/core/ data/ ui/          formatting, theme, data access, Web Crypto, charts, safe Markdown
+  js/views/                   one class per tab extending View; registry in views/index.js
 ```
 
-| Principle | Where you can see it |
+| Principle | In this codebase |
 |---|---|
-| **Single responsibility** | Indicators, signal rules, screens, storage, providers and each UI tab are separate modules |
-| **Open/closed** | Add a signal (a `SignalRule` class), a screen (a `Screen` entry), a tab (a `View` subclass) or a data source (a provider class) without changing existing code |
-| **Liskov substitution** | Any `PriceProvider`/`Summarizer`/`Cipher` works in the pipeline; the tests swap in fakes |
-| **Interface segregation** | Small Protocols (price history, fundamentals, news search, per-symbol news) instead of one big "data source" |
-| **Dependency inversion** | `MarketPipeline` and `PortfolioService` depend on Protocols; only `scripts/*.py` and `js/main.js` choose concrete classes |
+| **Single responsibility** | Indicators, signal rules, screens, storage, each data provider and each UI tab are separate modules |
+| **Open/closed** | New signal = new `SignalRule` class. New screen = new `Screen` entry. New tab = new `View` subclass. New data source = new provider class |
+| **Liskov substitution** | Any `PriceProvider`, `Summarizer` or `Cipher` implementation works in the pipeline; the tests substitute fakes |
+| **Interface segregation** | Small Protocols (price history, fundamentals, news search, per-symbol news) instead of one large "data source" interface |
+| **Dependency inversion** | `MarketPipeline` and `PortfolioService` depend only on Protocols. Concrete classes are chosen in `scripts/*.py` and `js/main.js` |
 
-### Extending it
+**Testing:** a pytest suite covers indicators, signal rules, screens, valuation, encryption round-trips, provider parsing and an output-contract test that pins the JSON schema the front end depends on. CI runs it on every push.
 
-- **New signal:** add a class with `evaluate(ctx) -> list[Signal]` in `analysis/signals.py`, then append it to `DEFAULT_RULES`.
-- **New screen:** append a `Screen(id, name, why, predicate)` to `DEFAULT_SCREENS`.
-- **New data source** (e.g. Alpha Vantage, Bursa API): implement `PriceProvider.history()` and pass it in `scripts/fetch_data.py`.
-- **New tab:** create `docs/js/views/<name>.js` extending `View`, then add it to `views/index.js`.
-- **Tests:** `pip install -r scripts/requirements-dev.txt && python -m pytest`. CI runs them on every push. `tests/test_pipeline.py::test_pipeline_output_contract` pins the JSON keys the front end relies on.
+## Run your own copy
 
-## Customise
+1. Fork this repo (keep it public for free GitHub Pages).
+2. Go to **Settings → Pages**, choose *Deploy from a branch*, then set it to `main` and `/docs`.
+3. Go to **Actions → Update market data → Run workflow** to generate the first data.
+4. *(Optional)* **AI brief:** create a free key at [Google AI Studio](https://aistudio.google.com/apikey) and add it as the repo secret `GEMINI_API_KEY`.
+5. *(Optional)* **Encrypted portfolio:**
+   - Create a private repo `<you>/market-dashboard-private` containing `holdings.json` (format: [`holdings.example.json`](holdings.example.json)).
+   - Create a fine-grained token with access to only that repo and **Contents: Read-only**.
+   - Add the repo secrets `PRIVATE_REPO_TOKEN` (the token) and `HOLDINGS_PASSPHRASE` (5+ random words).
 
-- **Watchlist / indices / news topics:** edit `config.json` (Yahoo symbols; Bursa stocks end in `.KL`). Pushing the change reruns the job.
-- **Schedule:** edit the cron lines in `.github/workflows/update-data.yml` (times are in UTC).
+Customise the watchlist, indices and news topics in [`config.json`](config.json) (Yahoo symbols; Bursa tickers end in `.KL`). The schedule is set in [`.github/workflows/update-data.yml`](.github/workflows/update-data.yml).
 
-## Tech
+### Development
 
-Python 3.12 (pandas, yfinance, feedparser, cryptography, pytest) · GitHub Actions · GitHub Pages · vanilla JS ES modules (no build step) · Web Crypto API · CSP · lightweight-charts · responsive, dark mode, installable as a PWA.
+```bash
+pip install -r scripts/requirements-dev.txt
+python -m pytest                      # tests
+python scripts/fetch_data.py          # build docs/data locally
+cd docs && python -m http.server      # preview at http://localhost:8000
+```
 
-> Data comes from Yahoo Finance (unofficial, delayed) and Google News RSS. This is a learning project and not financial advice.
+Pinned dependency locks are regenerated with
+`uv pip compile scripts/requirements.txt --python-version 3.12 --python-platform x86_64-manylinux_2_28 --generate-hashes -o scripts/requirements.lock` (and the same for `requirements-dev`).
+
+## Tech stack
+
+Python 3.12 (pandas, yfinance, feedparser, cryptography, pytest) · GitHub Actions · GitHub Pages · vanilla JavaScript ES modules · Web Crypto API · [Lightweight Charts](https://github.com/tradingview/lightweight-charts) · Gemini API
+
+---
+
+<sub>Market data from Yahoo Finance (unofficial, delayed) and Google News RSS. This is a personal learning project, not financial advice.</sub>
