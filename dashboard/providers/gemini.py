@@ -37,20 +37,47 @@ class GeminiSummarizer:
                 return text
         return None
 
+    # Gemini 2.5+ "thinks" before answering and those tokens count against
+    # maxOutputTokens – with a small limit the brief got cut off mid-sentence.
+    # So: turn thinking off where supported, allow plenty of tokens, and only
+    # accept answers that finished normally (finishReason STOP).
+    MAX_OUTPUT_TOKENS = 4096
+    GENERATION_VARIANTS = (
+        {"thinkingConfig": {"thinkingBudget": 0}},   # 2.5 Flash: no thinking
+        {},                                          # models that reject thinkingConfig
+    )
+
     def _call(self, model: str, prompt: str) -> str | None:
-        try:
-            r = self.http.post(
-                self.ENDPOINT.format(model=model),
-                headers={"x-goog-api-key": self.key},   # works for both AIza… and newer AQ.… keys; keeps the key out of URLs
-                json={"contents": [{"parts": [{"text": prompt}]}],
-                      "generationConfig": {"temperature": 0.4, "maxOutputTokens": 1200}},
-                timeout=90,
-            )
-            if r.status_code != 200:
-                print(f"Gemini {model}: HTTP {r.status_code}", file=sys.stderr)   # never log the key/url
+        for extra in self.GENERATION_VARIANTS:
+            config = {"temperature": 0.4, "maxOutputTokens": self.MAX_OUTPUT_TOKENS, **extra}
+            try:
+                r = self.http.post(
+                    self.ENDPOINT.format(model=model),
+                    headers={"x-goog-api-key": self.key},   # works for AIza… and AQ.… keys; keeps the key out of URLs
+                    json={"contents": [{"parts": [{"text": prompt}]}], "generationConfig": config},
+                    timeout=90,
+                )
+            except Exception as e:
+                print(f"Gemini {model} failed: {type(e).__name__}", file=sys.stderr)
                 return None
-            parts = r.json()["candidates"][0]["content"]["parts"]
-            return "".join(p.get("text", "") for p in parts).strip() or None
-        except Exception as e:
-            print(f"Gemini {model} failed: {type(e).__name__}", file=sys.stderr)
+            if r.status_code == 400 and extra:
+                continue                                    # try again without the optional setting
+            if r.status_code != 200:
+                print(f"Gemini {model}: HTTP {r.status_code}", file=sys.stderr)   # never log the key
+                return None
+            return self._complete_text(model, r.json())
+        return None
+
+    @staticmethod
+    def _complete_text(model: str, body: dict) -> str | None:
+        try:
+            cand = body["candidates"][0]
+            text = "".join(p.get("text", "") for p in cand["content"]["parts"]).strip()
+        except (KeyError, IndexError, TypeError):
+            print(f"Gemini {model}: unexpected response shape", file=sys.stderr)
             return None
+        reason = cand.get("finishReason", "STOP")
+        if reason != "STOP":
+            print(f"Gemini {model}: incomplete answer (finishReason={reason}) – discarded", file=sys.stderr)
+            return None
+        return text or None

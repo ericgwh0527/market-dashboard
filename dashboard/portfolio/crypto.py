@@ -28,11 +28,13 @@ def _b64(b: bytes) -> str:
 class AesGcmCipher:
     ITERATIONS = 600_000
 
-    def __init__(self, passphrase: str, iterations: int = ITERATIONS):
+    PAD_BLOCK = 8192   # ciphertext size only reveals "under 8 KB", not how many holdings you have
+
+    def __init__(self, passphrase: str, iterations: int = ITERATIONS, pad_block: int = PAD_BLOCK):
         if not passphrase:
             raise ValueError("passphrase required")
         self._pw = passphrase.encode("utf-8")
-        self.iterations = iterations
+        self.iterations, self.pad_block = iterations, pad_block
 
     def _key(self, salt: bytes, iterations: int) -> bytes:
         return PBKDF2HMAC(algorithm=hashes.SHA256(), length=32, salt=salt, iterations=iterations).derive(self._pw)
@@ -49,6 +51,8 @@ class AesGcmCipher:
                 pass
         iv = os.urandom(12)
         data = json.dumps(obj, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+        if self.pad_block:
+            data += b" " * (-len(data) % self.pad_block)   # trailing spaces are valid JSON
         ct = AESGCM(self._key(salt, self.iterations)).encrypt(iv, data, None)
         return {"v": 1, "alg": "AES-256-GCM", "kdf": "PBKDF2-SHA256", "iter": self.iterations,
                 "salt": _b64(salt), "iv": _b64(iv), "ct": _b64(ct)}

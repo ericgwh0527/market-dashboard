@@ -70,3 +70,12 @@ def test_service_writes_only_ciphertext(tmp_path, frame):
     assert "1023" not in raw and "NVDA" not in raw
     data = AesGcmCipher("pw", iterations=1000).decrypt(json.loads(raw))
     assert data["totals"]["value"] == pytest.approx(2600) and len(data["history"]) == 1
+
+
+def test_ciphertext_size_is_padded():
+    import base64
+    c = AesGcmCipher("pw", iterations=1000, pad_block=4096)
+    small = base64.b64decode(c.encrypt({"p": [1]})["ct"])
+    bigger = base64.b64decode(c.encrypt({"p": list(range(300))})["ct"])
+    assert len(small) == len(bigger) == 4096 + 16          # same size -> position count hidden
+    assert c.decrypt(c.encrypt({"p": [1]})) == {"p": [1]}   # padding is transparent

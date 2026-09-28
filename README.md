@@ -35,12 +35,32 @@ flowchart LR
 
 ## Security model (public repo, private holdings)
 
+**Holdings privacy**
 1. Real holdings live only in a **private** repo (`market-dashboard-private/holdings.json`).
-2. The workflow checks that repo out with a **fine-grained, read-only token** (`PRIVATE_REPO_TOKEN`). The checkout is deleted before the commit step, and `.gitignore` blocks `holdings.json`.
-3. `build_portfolio.py` values positions **in memory** without writing public price files for them, so the repo doesn't reveal what you hold. It then encrypts the result with **AES-256-GCM**, using a key derived from `HOLDINGS_PASSPHRASE` via **PBKDF2-SHA256 (600k iterations)**, with a fresh IV every run.
-4. The browser derives the key with the Web Crypto API and decrypts locally. With "keep unlocked", it stores only a **non-extractable `CryptoKey`** in IndexedDB, never the passphrase.
+2. The workflow reads it with a **fine-grained, read-only token** (`PRIVATE_REPO_TOKEN`, scoped to that one repo). The checkout is deleted before the commit step, and the commit step refuses to stage anything outside `docs/data/` or any file named like `holdings`.
+3. `build_portfolio.py` values positions **in memory**. It writes no per-holding files, silences all library output and prints only exception *types*, because Actions logs of a public repo are public.
+4. The result is encrypted with **AES-256-GCM**, using a key derived from `HOLDINGS_PASSPHRASE` via **PBKDF2-SHA256 (600k iterations)**, with a fresh IV every run. The plaintext is **padded to 8 KB blocks**, so the file size doesn't reveal how many positions you hold.
+5. The browser decrypts locally with Web Crypto. "Keep unlocked" stores only a **non-extractable `CryptoKey`** in IndexedDB, never the passphrase, and it **expires after 30 days**.
 
-What stays visible: the watchlist, and the fact that an encrypted portfolio file exists and when it changed.
+**Website hardening**
+- A strict **Content-Security-Policy** allows only this site's own scripts, styles, data and images, with no third-party requests (Google Fonts removed) and `connect-src 'self'`, so injected content couldn't send data elsewhere.
+- Untrusted text (news titles, AI brief, Yahoo fields) is HTML-escaped. News links must be `http(s)`, and the AI brief goes through a tiny Markdown renderer that **cannot produce links, images or HTML**, which defends against prompt-injected `javascript:` links.
+- Frame protection (the page refuses to run inside another site's iframe) and `no-referrer`.
+
+**Pipeline / supply chain**
+- Workflow token is read-only by default. Only the data job gets `contents: write`, and the token is **not persisted** in `.git/config`, so third-party Python code can't read it.
+- GitHub Actions are pinned to **commit SHAs**. Python dependencies are pinned to exact versions **with hashes** (`scripts/requirements.lock`, installed with `--require-hashes`).
+- Each secret is exposed only to the step that needs it. The Gemini key goes in a request header, never in a URL or log.
+- CI fails if a `holdings.json` or anything shaped like an API key or token is committed.
+
+**Residual risks (by design, know them)**
+- The encrypted file is public, so it can be attacked **offline**. Its safety equals your passphrase: use 5+ random words and never reuse it.
+- All `<username>.github.io/*` sites share one browser origin. Another Pages site of yours with untrusted scripts could use a remembered key. Only tick "keep unlocked" on your own devices, or use a custom domain.
+- Anyone with access to your GitHub account controls everything. Turn on **2FA**, and give the fine-grained token an expiry.
+- The watchlist, the data timestamps and the fact that a portfolio exists are public.
+- The AI brief is generated from public headlines and can be wrong or manipulated. It's for learning, not advice.
+
+To update pinned Python deps: `uv pip compile scripts/requirements.txt --python-version 3.12 --python-platform x86_64-manylinux_2_28 --generate-hashes -o scripts/requirements.lock` (same for `requirements-dev`).
 
 ## Setup
 
@@ -107,6 +127,6 @@ docs/                         static site (GitHub Pages)
 
 ## Tech
 
-Python 3.12 (pandas, yfinance, feedparser, cryptography, pytest) · GitHub Actions · GitHub Pages · vanilla JS ES modules (no build step) · Web Crypto API · lightweight-charts · responsive, dark mode, installable as a PWA.
+Python 3.12 (pandas, yfinance, feedparser, cryptography, pytest) · GitHub Actions · GitHub Pages · vanilla JS ES modules (no build step) · Web Crypto API · CSP · lightweight-charts · responsive, dark mode, installable as a PWA.
 
 > Data comes from Yahoo Finance (unofficial, delayed) and Google News RSS. This is a learning project and not financial advice.

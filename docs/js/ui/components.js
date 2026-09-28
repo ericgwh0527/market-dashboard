@@ -33,9 +33,17 @@ export function stockRow(s, key = "chg_1d") {
   </div>`;
 }
 
+/** Only http(s) links from feeds – blocks javascript:, data: and other schemes. */
+export function safeUrl(url) {
+  try {
+    const u = new URL(String(url), location.href);
+    return u.protocol === "https:" || u.protocol === "http:" ? u.href : "#";
+  } catch { return "#"; }
+}
+
 export function newsItem(n) {
   const meta = [n.source, n.topic, n.symbol].filter(Boolean).map(esc).join(" · ");
-  return `<a class="news-item" href="${esc(n.url)}" target="_blank" rel="noopener">
+  return `<a class="news-item" href="${esc(safeUrl(n.url))}" target="_blank" rel="noopener noreferrer">
     <div class="n-title">${esc(n.title)}</div>
     <div class="n-meta">${meta} · ${ago(n.published)}</div></a>`;
 }

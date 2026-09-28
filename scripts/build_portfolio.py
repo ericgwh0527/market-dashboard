@@ -30,13 +30,22 @@ def main() -> int:
     if not path or not pw or not Path(path).exists():
         print("Portfolio: no holdings file or passphrase configured – skipping.")
         return 0
-    holdings = json.loads(Path(path).read_text(encoding="utf-8"))
+    try:
+        holdings = json.loads(Path(path).read_text(encoding="utf-8"))
+    except ValueError:
+        print("Portfolio: holdings.json is not valid JSON – skipping.")
+        return 1
     service = PortfolioService(
         prices=YahooPriceProvider(quiet=True, min_rows=1),
         cipher=AesGcmCipher(pw),
         store=DataStore(ROOT / "docs" / "data"),
     )
-    service.run(holdings)
+    try:
+        service.run(holdings)
+    except Exception as e:
+        # Actions logs are public: a traceback could quote holdings values, so print the type only.
+        print(f"Portfolio step failed ({type(e).__name__}); previous encrypted file kept.")
+        return 1
     print("Portfolio encrypted -> docs/data/portfolio.enc.json")
     return 0
 

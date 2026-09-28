@@ -123,4 +123,10 @@ class App {
   }
 }
 
-new App().start();
+// Refuse to run inside someone else's frame (clickjacking: a hidden overlay could
+// capture the passphrase). GitHub Pages can't send X-Frame-Options, so do it here.
+if (window.top !== window.self) {
+  document.body.textContent = "This dashboard can't be shown inside another site.";
+} else {
+  new App().start();
+}

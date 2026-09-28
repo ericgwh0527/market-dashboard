@@ -1,6 +1,7 @@
 import { $, esc } from "../core/dom.js";
 import { arrow, dir, isNum, pct, priceStr } from "../core/format.js";
 import { empty, infoBtn, newsItem, spark, stockRow } from "../ui/components.js";
+import { renderSafeMarkdown } from "../ui/markdown.js";
 import { View } from "./view.js";
 
 export class OverviewView extends View {
@@ -39,8 +40,7 @@ export class OverviewView extends View {
   #summary(sm) {
     if (!sm?.text) return "";
     const badges = `<span class="pill info">AI · ${esc(sm.model || "")}</span>${sm.stale ? '<span class="pill warn">from earlier run</span>' : ""}`;
-    // AI text is untrusted: escape HTML first, then let marked render the Markdown.
-    const body = window.marked ? window.marked.parse(sm.text.replace(/</g, "&lt;")) : `<div style="white-space:pre-wrap">${esc(sm.text)}</div>`;
+    const body = renderSafeMarkdown(sm.text);   // AI text is untrusted – see ui/markdown.js
     return `<h2>Today's brief ${badges}</h2>
       <div class="card summary">${body}<div class="faint">Written by AI from the data on this page – may contain mistakes.</div></div>`;
   }

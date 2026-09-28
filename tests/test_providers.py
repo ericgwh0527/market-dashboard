@@ -55,3 +55,40 @@ def test_gemini_sends_key_in_header_not_url():
     out = GeminiSummarizer("AQ.Ab-test", "gemini-2.5-flash", http=Http()).summarize({"x": 1})
     url, kw = calls[0]
     assert out == "brief" and "AQ." not in url and kw["headers"]["x-goog-api-key"] == "AQ.Ab-test" and "params" not in kw
+
+
+class _Resp:
+    def __init__(self, status, body=None):
+        self.status_code, self._body = status, body or {}
+    def json(self):
+        return self._body
+
+
+def _ok(text, reason="STOP"):
+    return _Resp(200, {"candidates": [{"content": {"parts": [{"text": text}]}, "finishReason": reason}]})
+
+
+def test_gemini_discards_truncated_answer_and_tries_next_model():
+    from dashboard.providers.gemini import GeminiSummarizer
+    replies = iter([_ok("cut off at", "MAX_TOKENS"), _ok("full brief")])
+
+    class Http:
+        def post(self, url, **kw):
+            assert kw["json"]["generationConfig"]["maxOutputTokens"] >= 4096
+            return next(replies)
+
+    assert GeminiSummarizer("k", "gemini-2.5-flash", http=Http()).summarize({}) == "full brief"
+
+
+def test_gemini_retries_without_thinking_config_on_400():
+    from dashboard.providers.gemini import GeminiSummarizer
+    seen = []
+
+    class Http:
+        def post(self, url, **kw):
+            cfg = kw["json"]["generationConfig"]
+            seen.append("thinkingConfig" in cfg)
+            return _Resp(400) if "thinkingConfig" in cfg else _ok("ok")
+
+    assert GeminiSummarizer("k", "gemini-2.0-flash", http=Http()).summarize({}) == "ok"
+    assert seen == [True, False]

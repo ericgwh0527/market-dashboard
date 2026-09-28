@@ -7,6 +7,7 @@ import { View } from "./view.js";
 
 const MARKET_LABEL = { MY: "Bursa", US: "US" };
 const prefixFor = (cur) => (cur === "USD" ? "$" : "RM ");
+const REMEMBER_DAYS = 30;   // a remembered key expires; you re-enter the passphrase monthly
 
 /** Encrypted portfolio: locked -> unlock form -> decrypted view. */
 export class PortfolioView extends View {
@@ -34,7 +35,9 @@ export class PortfolioView extends View {
     if (!cryptoAvailable()) return this.#message("Can't unlock here", "Open this page over https to unlock.");
 
     const saved = await keyStore.get();
-    if (saved && saved.salt === blob.salt) {
+    const fresh = saved && Date.now() - (saved.savedAt || 0) < REMEMBER_DAYS * 864e5;
+    if (saved && !fresh) await keyStore.clear();
+    if (fresh && saved.salt === blob.salt) {
       try { this.portfolio = await decrypt(saved.key, blob); return this.#draw(); } catch { await keyStore.clear(); }
     }
     this.#lockForm(blob);
@@ -53,7 +56,7 @@ export class PortfolioView extends View {
       <p class="muted" style="font-size:14px;margin:6px 0 0">It's encrypted (AES-256). Enter your passphrase – it never leaves this device.</p>
       <form id="unlockForm" autocomplete="off">
         <input type="password" id="pw" placeholder="Passphrase" aria-label="Passphrase" autocomplete="current-password" required>
-        <label class="chk"><input type="checkbox" id="remember" checked> Keep unlocked on this device</label>
+        <label class="chk"><input type="checkbox" id="remember"> Keep unlocked on this device for ${REMEMBER_DAYS} days (only on your own phone/PC)</label>
         <button class="btn" type="submit" id="unlockBtn">Unlock</button>
         <div class="err" id="pwErr" role="alert"></div>
       </form></div>`;
@@ -65,7 +68,7 @@ export class PortfolioView extends View {
       try {
         const key = await deriveKey(q("#pw").value, blob);
         this.portfolio = await decrypt(key, blob);
-        if (q("#remember").checked) await this.ctx.keyStore.set({ salt: blob.salt, key });
+        if (q("#remember").checked) await this.ctx.keyStore.set({ salt: blob.salt, key, savedAt: Date.now() });
         this.#draw();
       } catch {
         q("#pwErr").textContent = "Wrong passphrase.";
@@ -100,7 +103,8 @@ export class PortfolioView extends View {
       <div class="card">${p.allocation.map((a) => `<div class="alloc-row"><div>${esc(MARKET_LABEL[a.name] || a.name)}</div>
         <div><div class="alloc-bar" style="width:${((a.pct || 0) / maxPct) * 100}%"></div></div><div class="num" style="text-align:right">${fmt(a.pct, 1)}%</div></div>`).join("")}</div>
       <h2>Positions</h2>
-      <div class="card" style="padding:4px 16px"><div class="tbl-wrap"><table class="tbl num">
+      <div class="card list pos-cards" style="padding:0">${p.positions.map((r) => this.#positionCard(r, bc)).join("")}</div>
+      <div class="card pos-table" style="padding:4px 0"><div class="tbl-wrap"><table class="tbl num">
         <thead><tr><th>Stock</th><th>Value</th><th>P/L</th><th>P/L %</th><th>Today</th><th>Weight</th><th>Shares</th><th>Avg cost</th><th>Price</th></tr></thead>
         <tbody>${p.positions.map((r) => this.#positionRow(r, bc)).join("")}</tbody></table></div></div>
       ${p.cash.length ? `<p class="faint">Cash: ${p.cash.map((c) => `${esc(c.currency)} ${fmt(c.amount)}`).join(" · ")}</p>` : ""}
@@ -111,6 +115,25 @@ export class PortfolioView extends View {
     if (hasHistory && chartsReady()) this.#chart = valueChart($("#pfChart", this.#root), p.history, bc);
   }
 
+  /** Phone layout: one compact card per holding (no sideways scrolling). */
+  #positionCard(r, bc) {
+    const link = this.market?.get(r.symbol) ? `data-sym="${esc(r.symbol)}" tabindex="0"` : "";
+    const cp = prefixFor(r.currency);
+    return `<div class="pos-card" ${link}>
+      <div class="pc-top">
+        <div class="pc-name"><b>${esc(r.name)}</b><div class="faint">${esc(r.symbol)}${r.stale_price ? " · old price" : ""}</div></div>
+        <div class="pc-value num"><b>${money(r.value_base, bc)}</b><div class="${dir(r.day_chg_pct)}">${pct(r.day_chg_pct)} today</div></div>
+      </div>
+      <div class="pc-grid num">
+        <div><span class="faint">P/L</span><span class="${dir(r.pl_base)}">${signedMoney(r.pl_base, bc)} (${pct(r.pl_pct)})</span></div>
+        <div><span class="faint">Weight</span><span>${fmt(r.weight, 1)}%</span></div>
+        <div><span class="faint">Shares</span><span>${fmt(r.shares, r.shares % 1 ? 3 : 0)}</span></div>
+        <div><span class="faint">Cost → price</span><span>${cp}${fmt(r.avg_cost)} → ${fmt(r.price)}</span></div>
+      </div>
+    </div>`;
+  }
+
+  /** Wider screens: full table. */
   #positionRow(r, bc) {
     const link = this.market?.get(r.symbol) ? `data-sym="${esc(r.symbol)}"` : "";
     const cp = prefixFor(r.currency);

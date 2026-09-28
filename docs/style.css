@@ -211,10 +211,27 @@ select, input[type="password"], input[type="text"], input[type="search"] {
 table.tbl { width: 100%; border-collapse: collapse; font-size: 14px; }
 table.tbl th { text-align: right; font-size: 12px; color: var(--text-3); font-weight: 600; padding: 8px 10px; border-bottom: 1px solid var(--border); white-space: nowrap; }
 table.tbl td { text-align: right; padding: 9px 10px; border-bottom: 1px solid var(--border); white-space: nowrap; }
-table.tbl th:first-child, table.tbl td:first-child { text-align: left; position: sticky; left: 0; background: var(--surface); }
+/* sticky first column: padded cell (not a padded wrapper) so scrolled cells can't show through at the edge */
+table.tbl th:first-child, table.tbl td:first-child { text-align: left; position: sticky; left: 0; z-index: 1; background: var(--surface); padding-left: 16px; box-shadow: 1px 0 0 var(--border); }
+table.tbl th:last-child, table.tbl td:last-child { padding-right: 16px; }
 table.tbl tr:last-child td { border-bottom: 0; }
 table.tbl tbody tr { cursor: pointer; }
-.tbl-wrap { overflow-x: auto; margin: 0 -16px; padding: 0 16px; }
+.tbl-wrap { overflow-x: auto; }
+
+/* portfolio positions: cards on phones, table from 700px */
+.pos-table { display: none; }
+@media (min-width: 700px) { .pos-cards { display: none; } .pos-table { display: block; } }
+.pos-card { padding: 12px 16px; border-bottom: 1px solid var(--border); cursor: pointer; }
+.pos-card:last-child { border-bottom: 0; }
+.pos-card[data-sym]:hover { background: var(--surface-2, rgba(127,127,127,.06)); }
+.pc-top { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+.pc-name { min-width: 0; }
+.pc-name b { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pc-value { text-align: right; white-space: nowrap; font-size: 13px; }
+.pc-value b { font-size: 15px; display: block; }
+.pc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; margin-top: 10px; font-size: 13px; }
+.pc-grid > div { display: flex; flex-direction: column; min-width: 0; }
+.pc-grid .faint { font-size: 11.5px; }
 .alloc-row { display: grid; grid-template-columns: 70px minmax(0,1fr) 60px; gap: 10px; align-items: center; padding: 5px 0; font-size: 14px; }
 .alloc-bar { height: 12px; border-radius: 4px; background: var(--series-1); }
 

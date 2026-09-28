@@ -44,4 +44,4 @@ export function ago(iso, now = Date.now()) {
 }
 
 export const money = (n, prefix, d = 2) => (isNum(n) ? (n < 0 ? "−" : "") + prefix + fmt(Math.abs(n), d) : "–");
-export const signedMoney = (n, prefix) => (isNum(n) ? (n > 0 ? "+" : n < 0 ? "−" : "") + prefix + fmt(Math.abs(n)) : "–");
+export const signedMoney = (n, prefix, d = 2) => (isNum(n) ? (n > 0 ? "+" : n < 0 ? "−" : "") + prefix + fmt(Math.abs(n), d) : "–");
