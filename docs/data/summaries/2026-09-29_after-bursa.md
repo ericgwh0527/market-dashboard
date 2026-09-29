@@ -1,16 +1,14 @@
-# Market brief – Tue 29 Sep 2026, 01:48 AM MYT
+# Market brief – Tue 29 Sep 2026, 04:03 PM MYT
 
-**Big picture**  
-The FBM KLCI ended mixed at 1,671.62 while the ringgit traded at 4.08 against the US dollar. US markets saw general declines, with the S&P 500 down 0.56% and the Nasdaq falling 0.63% as rising Treasury yields and oil prices squeezed equities.
+**Big picture** – The FBM KLCI dropped 1.18% to 1,650.32 while the ringgit ticked up to 4.08 against the US dollar. US markets also slipped, with the S&P 500 down 0.77% as higher oil prices, rising bond yields, and ongoing AI spending concerns weighed on investor sentiment.
 
-**Movers**  
-* **YTL Power** rose 1.55% following news that third-generation family members joined boards of YTL-listed entities.  
-* **Gamuda** gained 0.83% after bagging a major contract for an Australian renewable energy project.  
-* **AMD** dropped 3.98% amidst a broader pullback in chip and tech stocks driven by AI safety and market concerns.
+**Movers**
+*   **Meta:** Fell 4.79% after investors reacted to high AI spending concerns and market pressures.
+*   **Tenaga Nasional:** Dropped 2.74% amid a broader market pullback driven by rising US bond yields and oil prices.
+*   **Gamuda:** Gained 1.22%, supported by positive momentum following news of a large solar PV venture.
 
-**Worth watching**  
-* **Tenaga Nasional** and **Press Metal** both flashed a "death cross" technical signal, where their 50-day average crossed below their 200-day average.  
-* **Gamuda** triggered a "golden cross" signal, with its 50-day average crossing above its 200-day average in an ongoing uptrend.
+**Worth watching**
+*   **Tenaga Nasional:** Slipped to an RSI of 23.75, entering oversold territory alongside a bearish "death cross" pattern.
+*   **Gamuda:** Formed a bullish "golden cross," where its 50-day average crossed above its 200-day average, signaling improving momentum.
 
-**Concept of the day**  
-The **VIX (fear index)** measures expected stock market volatility derived from options prices to gauge investor anxiety. Today, the VIX rose 7.13%, reflecting heightened nervousness in the broader markets.
+**Concept of the day** – The **RSI (Relative Strength Index)** is a technical momentum indicator that measures the speed and change of price movements on a scale from 0 to 100. An RSI reading below 30 typically suggests an asset is "oversold" (heavily sold off), while a reading above 70 indicates it may be "overbought."
