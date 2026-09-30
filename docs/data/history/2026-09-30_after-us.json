@@ -1,0 +1,449 @@
+{
+ "generated_at": "2026-09-30T00:44:37+00:00",
+ "session": "after-us",
+ "rows": [
+  {
+   "symbol": "^KLSE",
+   "name": "FBM KLCI",
+   "price": 1670.02,
+   "chg_1d": -0.0957,
+   "chg_1m": -4.4906,
+   "rsi14": 36.4129,
+   "trend": "Mixed",
+   "vol_ratio": 0.5757,
+   "from_hi_52w": -5.7152,
+   "signals": []
+  },
+  {
+   "symbol": "MYR=X",
+   "name": "USD / MYR",
+   "price": 4.076,
+   "chg_1d": -0.1348,
+   "chg_1m": 1.2017,
+   "rsi14": 54.3216,
+   "trend": "Uptrend",
+   "vol_ratio": null,
+   "from_hi_52w": -3.6407,
+   "signals": []
+  },
+  {
+   "symbol": "^GSPC",
+   "name": "S&P 500",
+   "price": 7670.8398,
+   "chg_1d": -0.1672,
+   "chg_1m": -0.5306,
+   "rsi14": 49.8773,
+   "trend": "Uptrend",
+   "vol_ratio": 0.54,
+   "from_hi_52w": -1.866,
+   "signals": []
+  },
+  {
+   "symbol": "^IXIC",
+   "name": "Nasdaq",
+   "price": 26797.541,
+   "chg_1d": -0.0852,
+   "chg_1m": 1.4965,
+   "rsi14": 55.3109,
+   "trend": "Uptrend",
+   "vol_ratio": 0.7742,
+   "from_hi_52w": -1.8002,
+   "signals": []
+  },
+  {
+   "symbol": "^DJI",
+   "name": "Dow Jones",
+   "price": 51349.9219,
+   "chg_1d": -0.2556,
+   "chg_1m": -4.1263,
+   "rsi14": 39.0036,
+   "trend": "Mixed",
+   "vol_ratio": 0.8891,
+   "from_hi_52w": -6.2005,
+   "signals": []
+  },
+  {
+   "symbol": "^VIX",
+   "name": "VIX (fear index)",
+   "price": 16.04,
+   "chg_1d": -0.1867,
+   "chg_1m": 7.5067,
+   "rsi14": 51.7206,
+   "trend": "Mixed",
+   "vol_ratio": null,
+   "from_hi_52w": -54.5609,
+   "signals": [
+    "MACD turned bullish (momentum improving)"
+   ]
+  },
+  {
+   "symbol": "^TNX",
+   "name": "US 10Y yield",
+   "price": 5.255,
+   "chg_1d": 0.2863,
+   "chg_1m": 11.3348,
+   "rsi14": 79.1604,
+   "trend": "Uptrend",
+   "vol_ratio": null,
+   "from_hi_52w": -0.7179,
+   "signals": [
+    "RSI 79 – overbought (ran up fast)",
+    "At / near 52-week high"
+   ]
+  },
+  {
+   "symbol": "GC=F",
+   "name": "Gold",
+   "price": 4213.7002,
+   "chg_1d": -2.4877,
+   "chg_1m": -9.6548,
+   "rsi14": 35.3667,
+   "trend": "Downtrend",
+   "vol_ratio": 0.0231,
+   "from_hi_52w": -24.5695,
+   "signals": []
+  },
+  {
+   "symbol": "BZ=F",
+   "name": "Brent oil",
+   "price": 96.01,
+   "chg_1d": -8.8051,
+   "chg_1m": 7.502,
+   "rsi14": 45.3827,
+   "trend": "Uptrend",
+   "vol_ratio": 0.0168,
+   "from_hi_52w": -23.862,
+   "signals": []
+  },
+  {
+   "symbol": "BTC-USD",
+   "name": "Bitcoin",
+   "price": 83450.6328,
+   "chg_1d": -0.0622,
+   "chg_1m": 6.3898,
+   "rsi14": 60.6933,
+   "trend": "Uptrend",
+   "vol_ratio": 0.8976,
+   "from_hi_52w": -8.3969,
+   "signals": [
+    "MACD turned bearish (momentum fading)"
+   ]
+  },
+  {
+   "symbol": "1155.KL",
+   "name": "Maybank",
+   "price": 9.99,
+   "chg_1d": -1.6732,
+   "chg_1m": -6.4607,
+   "rsi14": 28.7093,
+   "trend": "Downtrend",
+   "vol_ratio": 1.5581,
+   "from_hi_52w": -19.5652,
+   "signals": [
+    "RSI 29 – oversold (sold off hard)"
+   ]
+  },
+  {
+   "symbol": "1295.KL",
+   "name": "Public Bank",
+   "price": 4.72,
+   "chg_1d": -1.4614,
+   "chg_1m": -4.6465,
+   "rsi14": 30.2874,
+   "trend": "Mixed",
+   "vol_ratio": 1.1271,
+   "from_hi_52w": -10.7751,
+   "signals": []
+  },
+  {
+   "symbol": "1023.KL",
+   "name": "CIMB",
+   "price": 7.78,
+   "chg_1d": -2.6283,
+   "chg_1m": -2.2613,
+   "rsi14": 45.5452,
+   "trend": "Downtrend",
+   "vol_ratio": 1.0428,
+   "from_hi_52w": -13.0726,
+   "signals": [
+    "Fell below 200-day average"
+   ]
+  },
+  {
+   "symbol": "5347.KL",
+   "name": "Tenaga Nasional",
+   "price": 12.72,
+   "chg_1d": -3.3435,
+   "chg_1m": -10.0424,
+   "rsi14": 22.5564,
+   "trend": "Downtrend",
+   "vol_ratio": 1.2788,
+   "from_hi_52w": -14.6309,
+   "signals": [
+    "RSI 23 – oversold (sold off hard)",
+    "Death cross – 50-day avg crossed below 200-day"
+   ]
+  },
+  {
+   "symbol": "6742.KL",
+   "name": "YTL Power",
+   "price": 5.81,
+   "chg_1d": 0.519,
+   "chg_1m": 1.0435,
+   "rsi14": 59.083,
+   "trend": "Uptrend",
+   "vol_ratio": 0.6005,
+   "from_hi_52w": -3.4884,
+   "signals": []
+  },
+  {
+   "symbol": "5398.KL",
+   "name": "Gamuda",
+   "price": 4.98,
+   "chg_1d": 1.4257,
+   "chg_1m": 10.4213,
+   "rsi14": 68.7318,
+   "trend": "Uptrend",
+   "vol_ratio": 1.0201,
+   "from_hi_52w": -12.0141,
+   "signals": [
+    "Golden cross – 50-day avg crossed above 200-day",
+    "MACD turned bullish (momentum improving)"
+   ]
+  },
+  {
+   "symbol": "5263.KL",
+   "name": "Sunway Construction",
+   "price": 7.65,
+   "chg_1d": -2.0487,
+   "chg_1m": -6.5934,
+   "rsi14": 48.4461,
+   "trend": "Mixed",
+   "vol_ratio": 0.383,
+   "from_hi_52w": -8.9286,
+   "signals": []
+  },
+  {
+   "symbol": "0166.KL",
+   "name": "Inari Amertron",
+   "price": 2.51,
+   "chg_1d": -1.5686,
+   "chg_1m": -1.9531,
+   "rsi14": 46.5975,
+   "trend": "Uptrend",
+   "vol_ratio": 1.1558,
+   "from_hi_52w": -8.3942,
+   "signals": []
+  },
+  {
+   "symbol": "0128.KL",
+   "name": "Frontken",
+   "price": 4.98,
+   "chg_1d": 0.4032,
+   "chg_1m": -2.1611,
+   "rsi14": 49.4743,
+   "trend": "Mixed",
+   "vol_ratio": 0.5105,
+   "from_hi_52w": -7.7778,
+   "signals": []
+  },
+  {
+   "symbol": "3816.KL",
+   "name": "MISC",
+   "price": 7.6,
+   "chg_1d": -1.9355,
+   "chg_1m": -4.0404,
+   "rsi14": 37.1396,
+   "trend": "Downtrend",
+   "vol_ratio": 0.7371,
+   "from_hi_52w": -15.9292,
+   "signals": [
+    "MACD turned bearish (momentum fading)"
+   ]
+  },
+  {
+   "symbol": "8869.KL",
+   "name": "Press Metal",
+   "price": 7.45,
+   "chg_1d": -0.9309,
+   "chg_1m": -6.875,
+   "rsi14": 37.3985,
+   "trend": "Downtrend",
+   "vol_ratio": 1.2331,
+   "from_hi_52w": -20.5757,
+   "signals": [
+    "Death cross – 50-day avg crossed below 200-day"
+   ]
+  },
+  {
+   "symbol": "5225.KL",
+   "name": "IHH Healthcare",
+   "price": 7.87,
+   "chg_1d": -1.7478,
+   "chg_1m": -4.6061,
+   "rsi14": 44.55,
+   "trend": "Downtrend",
+   "vol_ratio": 1.5443,
+   "from_hi_52w": -24.9046,
+   "signals": []
+  },
+  {
+   "symbol": "NVDA",
+   "name": "Nvidia",
+   "price": 228.86,
+   "chg_1d": 1.6839,
+   "chg_1m": 0.386,
+   "rsi14": 58.649,
+   "trend": "Uptrend",
+   "vol_ratio": 1.2264,
+   "from_hi_52w": -3.2468,
+   "signals": []
+  },
+  {
+   "symbol": "AVGO",
+   "name": "Broadcom",
+   "price": 349.57,
+   "chg_1d": -0.9183,
+   "chg_1m": -5.9132,
+   "rsi14": 41.9463,
+   "trend": "Mixed",
+   "vol_ratio": 0.7857,
+   "from_hi_52w": -29.3798,
+   "signals": []
+  },
+  {
+   "symbol": "AMD",
+   "name": "AMD",
+   "price": 607.87,
+   "chg_1d": -3.6091,
+   "chg_1m": 27.5243,
+   "rsi14": 65.6189,
+   "trend": "Uptrend",
+   "vol_ratio": 1.023,
+   "from_hi_52w": -4.8717,
+   "signals": []
+  },
+  {
+   "symbol": "TSM",
+   "name": "TSMC (ADR)",
+   "price": 452.88,
+   "chg_1d": 0.5038,
+   "chg_1m": 5.9864,
+   "rsi14": 63.1938,
+   "trend": "Uptrend",
+   "vol_ratio": 0.8028,
+   "from_hi_52w": -5.453,
+   "signals": []
+  },
+  {
+   "symbol": "MSFT",
+   "name": "Microsoft",
+   "price": 509.22,
+   "chg_1d": -1.3465,
+   "chg_1m": 0.8237,
+   "rsi14": 58.5552,
+   "trend": "Uptrend",
+   "vol_ratio": 0.8997,
+   "from_hi_52w": -8.0365,
+   "signals": []
+  },
+  {
+   "symbol": "AAPL",
+   "name": "Apple",
+   "price": 338.4,
+   "chg_1d": -0.7828,
+   "chg_1m": 7.572,
+   "rsi14": 61.7924,
+   "trend": "Uptrend",
+   "vol_ratio": 0.7651,
+   "from_hi_52w": -2.0096,
+   "signals": []
+  },
+  {
+   "symbol": "GOOGL",
+   "name": "Alphabet",
+   "price": 342.75,
+   "chg_1d": -0.3402,
+   "chg_1m": 0.6165,
+   "rsi14": 48.8119,
+   "trend": "Mixed",
+   "vol_ratio": 0.718,
+   "from_hi_52w": -16.1181,
+   "signals": []
+  },
+  {
+   "symbol": "AMZN",
+   "name": "Amazon",
+   "price": 246.15,
+   "chg_1d": -1.4099,
+   "chg_1m": -3.9452,
+   "rsi14": 41.2438,
+   "trend": "Mixed",
+   "vol_ratio": 0.9222,
+   "from_hi_52w": -14.2932,
+   "signals": []
+  },
+  {
+   "symbol": "META",
+   "name": "Meta",
+   "price": 715.62,
+   "chg_1d": -4.7947,
+   "chg_1m": 25.3056,
+   "rsi14": 60.9337,
+   "trend": "Mixed",
+   "vol_ratio": 1.2185,
+   "from_hi_52w": -8.2327,
+   "signals": []
+  },
+  {
+   "symbol": "TSLA",
+   "name": "Tesla",
+   "price": 357.45,
+   "chg_1d": -3.9397,
+   "chg_1m": 0.7441,
+   "rsi14": 47.0639,
+   "trend": "Mixed",
+   "vol_ratio": 0.9947,
+   "from_hi_52w": -28.3423,
+   "signals": [
+    "MACD turned bearish (momentum fading)"
+   ]
+  },
+  {
+   "symbol": "PLTR",
+   "name": "Palantir",
+   "price": 187.48,
+   "chg_1d": -1.1546,
+   "chg_1m": 0.8336,
+   "rsi14": 61.0101,
+   "trend": "Uptrend",
+   "vol_ratio": 0.7004,
+   "from_hi_52w": -9.6569,
+   "signals": []
+  },
+  {
+   "symbol": "NFLX",
+   "name": "Netflix",
+   "price": 69.23,
+   "chg_1d": -2.6985,
+   "chg_1m": -13.2891,
+   "rsi14": 33.4381,
+   "trend": "Downtrend",
+   "vol_ratio": 1.337,
+   "from_hi_52w": -44.5539,
+   "signals": []
+  }
+ ],
+ "top_headlines": [
+  "Once staunchly pro-China, Malaysian Chinese businesses are now distancing themselves from Beijing",
+  "ExxonMobil (XOM) Stock Could Be 15% Undervalued After Vietnam Supply Deal",
+  "U.S. stocks slip on Wall Street as rising Treasury yields pressure the market",
+  "How Malaysia engineered its economic turnaround",
+  "Stocks slip on Wall Street as rising Treasury yields pressure the market",
+  "Nvidia vs. AMD: Which AI Chip Stock Has More Room to Run After AMD's Surge Past $1 Trillion?",
+  "Ringgit ends marginally higher against US dollar, S&P rating supports sentiment",
+  "What's Going On With NVIDIA Stock Tuesday? - NVIDIA (NASDAQ:NVDA)",
+  "Bursa ends sharply lower on rising yields, oil prices",
+  "FBM KLCI sinks to nine-month low as external headwinds rattle investors"
+ ]
+}
