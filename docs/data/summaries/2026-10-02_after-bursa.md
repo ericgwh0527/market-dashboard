@@ -1,15 +1,16 @@
-# Market brief – Fri 02 Oct 2026, 12:40 AM MYT
+# Market brief – Fri 02 Oct 2026, 11:57 PM MYT
 
-**Big picture** – The FBM KLCI rose 0.44% to 1,651.17, while the ringgit ticked up against major currencies but eased against the US dollar at 4.08. US markets saw minor losses, with the S&P 500 dipping 0.04% and the Nasdaq slipping 0.16%.
+**Big picture**  
+Malaysia’s FBM KLCI ended virtually flat (+0.03% to 1,630.87), while the ringgit traded narrowly against the greenback at 4.08 per USD. In the US, equities advanced across the board, led by a 1.14% gain in the tech-heavy Nasdaq and a 0.66% rise in the S&P 500.
 
-**Movers**
-* **Maybank:** Fell 0.0% on the day but dropped below RM10 for the first time in nine months, weighed down by rising bond yields impacting banking stocks.
-* **Gamuda:** Jumped 4.02% with heavy volume hitting 4.6 times its 20-day average amid local bargain hunting.
-* **Alphabet:** Declined 1.73% following mixed factory data and market pressure on tech giants.
+**Movers**  
+* **Tesla (+5.05%)**: Surged following news that quarterly deliveries beat expectations, helped by recovering demand in Europe.  
+* **Broadcom (+3.18%)**: Climbed alongside broader semiconductor strength amid reports of deepening ties with Anthropic.  
+* **Maybank (+0.70%)**: Rebounded slightly after crossing back above RM10, having previously fallen below that level as rising bond yields pressured banking shares.
 
-**Worth watching**
-* **Maybank & Public Bank:** Both sit at an RSI of 29, signaling they are oversold after heavy recent selling.
-* **Tenaga Nasional & Press Metal:** Both flashed a "death cross" technical signal as their 50-day moving averages crossed below their 200-day moving averages.
+**Worth watching**  
+* **TSMC (ADR)**: Flashed an overbought signal with an RSI of 72 after gaining 3.15% on the day.  
+* **Tenaga Nasional & Press Metal**: Both triggered a "death cross" signal as their 50-day moving averages crossed below their 200-day moving averages.
 
-**Concept of the day**
-**RSI (Relative Strength Index):** A momentum indicator measured from 0 to 100 that helps determine if a stock is overbought or oversold. Generally, an RSI below 30 suggests a stock has been sold off heavily and may be oversold, while a reading above 70 indicates it may be overbought.
+**Concept of the day: Death Cross**  
+A death cross occurs when a stock's short-term 50-day moving average crosses below its long-term 200-day moving average. Technical analysts typically view this pattern as a sign that recent downward price momentum may continue.
