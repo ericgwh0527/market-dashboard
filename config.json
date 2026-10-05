@@ -18,6 +18,7 @@
     {"symbol": "1023.KL", "name": "CIMB",                "market": "MY", "theme": "Banks"},
     {"symbol": "5347.KL", "name": "Tenaga Nasional",     "market": "MY", "theme": "Utilities / Data centre"},
     {"symbol": "6742.KL", "name": "YTL Power",           "market": "MY", "theme": "Utilities / Data centre"},
+    {"symbol": "0338.KL", "name": "Oriental Kopi",       "market": "MY", "theme": "Consumer / F&B"},
     {"symbol": "5398.KL", "name": "Gamuda",              "market": "MY", "theme": "Construction / Data centre"},
     {"symbol": "5263.KL", "name": "Sunway Construction", "market": "MY", "theme": "Construction / Data centre"},
     {"symbol": "0166.KL", "name": "Inari Amertron",      "market": "MY", "theme": "Tech / Semiconductors"},
